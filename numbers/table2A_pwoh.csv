@@ -1,0 +1,8 @@
+Study,Region (adult Tdap),n,Age (y),Cutoff,Unit,Seropositive %,GMC,PMID
+Moriuchi 2017,Japan (no adult Tdap),84,4-44,multilevel,IU/mL,64.3,58.4,28700751
+Wehlin 2021,"Europe, 14 countries (Tdap, heterogeneous)",7903,20-39,15,IU/mL,53.6-88.0,-,34120372
+He 2022,China (no),4459,0-59,20,IU/mL,29.8,9.67,36283895
+Liu 2024 (Huzhou),China (no),1015,0-83,40,IU/mL,11.43,10.52,38768133
+Greve-Isdahl 2025,Norway (maternal programme; pregnant/mother-infant),366,pregnant,5 / 40,IU/mL,52 / 5,5.3,41414933
+"This study 2025 (PWoH, set A: hospital + serum bank)",Japan (no adult Tdap),450,20-98,10/15/20/40,EU/mL,64.0 / 51.3 / 41.3 / 16.7,15.5,-
+"  (this study PWoH, set B: hospital only)",Japan (no adult Tdap),301,20-98,10/15/20/40,EU/mL,64.8 / 51.2 / 41.5 / 17.6,15.8,-

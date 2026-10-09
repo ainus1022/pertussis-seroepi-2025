@@ -1,0 +1,5 @@
+Covariate,N,aOR,LCI,UCI,P
+HIV-positive (PWH vs PWoH),733,0.606,0.397,0.925,0.0203
+Age (per 10 years),,1.048,0.935,1.175,0.4218
+Male sex,,0.967,0.6,1.558,0.89
+Lymphocyte count (per 500 /uL),,0.958,0.852,1.077,0.4726

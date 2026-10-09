@@ -1,0 +1,4 @@
+generation,birth_years,N,seropositive_n,seropositive_pct,GMC,age_median,n_main,n_biobank,model_N,OR_aP_vs_wP_adj,LCI,UCI,P_adj,OR_crude,P_fisher_crude
+wP,<=1974,273,187,68.5,16.8,66.0,226,47,398,0.504,0.307,0.826,0.0066,0.549,0.0071
+transition,1975-1981,52,33,63.5,16.3,47.0,29,23,,,,,,,
+aP,>=1982,125,68,54.4,12.5,34.0,46,79,,,,,,,

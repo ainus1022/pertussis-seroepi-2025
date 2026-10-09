@@ -1,0 +1,4 @@
+model,N,HIV_aOR,LCI,UCI,P
+Analysis 2 model,733,0.606,0.397,0.925,0.0203
++ any symptom,733,0.608,0.398,0.928,0.0211
++ cough or sputum,733,0.609,0.399,0.93,0.0216

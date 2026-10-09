@@ -1,0 +1,14 @@
+# Nothing participant-level belongs in this repository.
+private/
+output/
+data_private/
+config_private.py
+*.xlsx
+*.xls
+*.dta
+*.log
+verify_stata_log.txt
+
+__pycache__/
+*.pyc
+.DS_Store

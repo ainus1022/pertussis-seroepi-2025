@@ -1,0 +1,4 @@
+group,n,GMC,GMC_lci,GMC_uci,median,ge10_n,ge10_pct,ge40_pct,ge100_n,P_mwu_vs_none,P_fisher_seropositive_vs_none
+No symptom recorded (reference),783,12.1,11.3,12.9,11.0,432,55.2,12.5,22,,
+Any respiratory symptom recorded,46,14.5,10.3,20.5,15.5,27,58.7,19.6,3,0.275,0.7606
+Cough or sputum recorded,22,15.9,9.0,27.9,12.5,12,54.5,27.3,3,0.453,1.0

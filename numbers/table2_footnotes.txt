@@ -1,0 +1,7 @@
+Table 2 footnotes
+-----------------
+[units] Titres from the present study are expressed in EU/mL as reported by the commercial laboratory (BML, Inc.; EIA), whereas the comparator studies report IU/mL. EU/mL and IU/mL are not formally interchangeable, and cut-offs are therefore not strictly comparable across rows; cross-study comparisons should be interpreted as approximate.
+[Greve-Isdahl 2025] Pregnant women and mother-infant pairs, not a general adult population.
+[Wehlin 2021] 14 European countries with heterogeneous adult Tdap policies and coverage.
+[Moosa 2025] Household cohorts (PHIRST); not HIV-specific.
+[Troy 2016] Recent infection was defined as anti-PT IgG >=94 IU/mL (cut-off validated by Baughman et al., PMID 15539504). The reported 4.3% is restricted to participants who had not received Tdap in the preceding six months; the unrestricted figure was 15/299 (5.0%). Adult Tdap is not used in Japan, so no such restriction was applied in the present study.

@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "Pertussis toxin IgG seropositivity during the 2025 outbreak in Japan: analysis code"
+type: software
+authors:
+  - family-names: Okazaki
+    given-names: Aiko
+    affiliation: "The University of Tokyo"
+license: MIT
+date-released: "2026-10-09"

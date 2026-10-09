@@ -1,0 +1,2 @@
+n_pairs,pos_2021_n,pos_2021_pct,pos_2025_n,pos_2025_pct,both_pos,pos_to_neg,neg_to_pos,both_neg,chi2_cc,p_chi2_cc,p_exact_binomial,chi2_uncorrected,p_uncorrected
+463,225,48.6,240,51.8,196,29,44,194,2.685,0.1013,0.1006,3.082,0.0792

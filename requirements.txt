@@ -1,0 +1,7 @@
+# Versions of the run that produced numbers/ are recorded in numbers/key_numbers.json.
+pandas>=2.3
+numpy>=2.2
+scipy>=1.15
+statsmodels>=0.14
+matplotlib>=3.10
+openpyxl>=3.1

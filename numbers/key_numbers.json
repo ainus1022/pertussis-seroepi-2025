@@ -1,0 +1,99 @@
+{
+  "generated_utc": "2026-10-09T04:08:01+00:00",
+  "jihs_pdf_n": 903,
+  "jihs_pdf_pos": 449,
+  "jihs_pdf_high": 4,
+  "table1_pwh_pos_pct": 50.0,
+  "table1_pwoh_a_pos_pct": 64.0,
+  "table1_pwoh_b_pos_pct": 64.8,
+  "table1_a_pos_chi2": 19.368,
+  "table1_a_pos_p": 1.0777842188395161e-05,
+  "table1_b_pos_chi2": 16.956,
+  "table1_b_pos_p": 3.8252946382067716e-05,
+  "table1_pwh_gmc": 10.5,
+  "table1_pwoh_a_gmc": 15.5,
+  "table1_pwoh_b_gmc": 15.8,
+  "table1_pwoh_sets": {
+    "A": 450,
+    "B": 301
+  },
+  "analysis1_jihs_pos_pct": 49.7,
+  "analysis1_pwoh_pos_pct": 64.0,
+  "analysis1_jihs_high_pct": 0.44,
+  "analysis1_pwoh_high_pct": 3.1,
+  "analysis2_pwoh_set": "B",
+  "analysis2_n": 733,
+  "analysis2_n_pwh": 528,
+  "analysis2_n_pwoh": 205,
+  "analysis2_hiv_aor": 0.606,
+  "analysis2_hiv_ci": [
+    0.397,
+    0.925
+  ],
+  "analysis2_hiv_p": 0.0203,
+  "analysis2_matched_or": 0.582,
+  "analysis2_matched_p": 0.0178,
+  "mcnemar_pairs": 463,
+  "mcnemar_chi2": 2.685,
+  "mcnemar_p": 0.1013,
+  "mcnemar_pos_2021_pct": 48.6,
+  "mcnemar_pos_2025_pct": 51.8,
+  "cd48_pairs": 476,
+  "cd48_low_pct": 39.1,
+  "cd48_high_pct": 53.1,
+  "cd48_fisher_p": 0.0371,
+  "cd48_mwu_p": 0.0194,
+  "table2_pwoh_set": "A",
+  "table2_pwoh_multicut": {
+    "10": 64.0,
+    "15": 51.3,
+    "20": 41.3,
+    "40": 16.7
+  },
+  "table2_pwoh_multicut_setB": {
+    "10": 64.8,
+    "15": 51.2,
+    "20": 41.5,
+    "40": 17.6
+  },
+  "table2_pwoh_gmc": 15.5,
+  "table2_pwoh_gmc_setB": 15.8,
+  "table2_pwh_gmc": 10.5,
+  "priming_pooled_n": 450,
+  "priming_model_n": 398,
+  "priming_ap_pct": 54.4,
+  "priming_wp_pct": 68.5,
+  "priming_or": 0.504,
+  "priming_ci": [
+    0.307,
+    0.826
+  ],
+  "priming_p": 0.0066,
+  "priming_cohort_p": 0.474,
+  "biobank_n": 149,
+  "biobank_pos_pct": 62.4,
+  "biobank_gmc": 14.7,
+  "env": {
+    "python": "3.13.9",
+    "pandas": "2.3.3",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "matplotlib": "3.10.6",
+    "statsmodels": "0.14.5"
+  },
+  "frozen_n": {
+    "n_pwh_2021": 471,
+    "n_pwh_2025": 528,
+    "n_pwoh_2025": 301,
+    "n_jihs_2023": 903
+  },
+  "figure_names": {
+    "age_pwoh_vs_pwh": "Fig1_age_pwoh_vs_pwh",
+    "forest": "Fig2_forest",
+    "jihs_vs_pwoh": "Fig3_jihs_vs_pwoh",
+    "mcnemar_age": "Fig4_mcnemar_age",
+    "cd48": "Fig5_cd4cd8",
+    "priming": "Fig6_priming_generation"
+  },
+  "match_algorithm": "1:1 nearest-neighbour matching on age within a ±3-year caliper, without replacement; PWH processed in ascending order of age (ties broken by participant ID); restricted to the Analysis-2 complete-case set; conditional odds ratio from discordant pairs (exact binomial test)."
+}
