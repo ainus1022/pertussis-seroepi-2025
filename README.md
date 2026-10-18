@@ -49,17 +49,19 @@ the aggregate results inspected, but the pipeline cannot be re-run.
 | `00_load_and_dedup.py` | Raw records → curated participant files; identity checks by date of birth | private |
 | `00b_extract_jihs.py` | Extracts or validates the general-population reference table | `data/` |
 | `01_derive_and_validate.py` | Derives every flag from the thresholds; builds the single analysis file | private |
-| `02_table1_characteristics.py` | Table 1; seropositivity by age group, PWoH vs PWH | `table1*.csv`, Fig1 |
-| `03_analysis1_jihs_vs_pwoh.py` | General population 2023 vs PWoH 2025 | `analysis1*.csv`, Fig3 |
-| `04_analysis2_forest.py` | Multivariable logistic regression; age-matched sensitivity analysis | `analysis2*.csv`, Fig2 |
+| `02_table1_characteristics.py` | Table 1; seropositivity by age group, PWoH vs PWH | `table1*.csv`, Fig2 |
+| `03_analysis1_jihs_vs_pwoh.py` | General population 2023 vs PWoH 2025 | `analysis1*.csv`, Fig1 |
+| `04_analysis2_forest.py` | Multivariable logistic regression; age-matched sensitivity analysis | `analysis2*.csv`, Fig3 |
 | `05_analysis3_mcnemar.py` | PWH, paired sera 2021 → 2025 | `mcnemar_*.csv`, Fig4 |
 | `06_cd4cd8_stratified.py` | PWH by baseline CD4/CD8 ratio | `cd4cd8.csv`, Fig5 |
 | `07_table2_international.py` | Comparison with published studies (cited by PMID) | `table2*.csv` |
 | `08_biobank_descriptive.py` | Serum-bank component of the PWoH set | `biobank_n149.csv` |
 | `09_fig6_priming_generation.py` | PWoH by priming-vaccine generation (whole-cell vs acellular) | `priming_*.csv`, Fig6 |
+| `10_hiv_history.py` | PWH: CD4 at ART initiation, ART duration, AIDS history and current CD4 vs 2025 seropositivity | `hiv_history*.csv` |
 
-Figure file names follow the order of the pipeline. The correspondence with the
-figure numbers of the manuscript will be listed here at submission.
+Figure file names carry the figure numbers of the manuscript (Fig1 general
+population vs PWoH; Fig2 PWoH vs PWH by age; Fig3 multivariable model; Fig4
+paired 2021 vs 2025; Fig5 baseline CD4/CD8 ratio; Fig6 priming-vaccine generation).
 
 Poster figures (`poster_figures.py`): `Poster_Fig1A` general population vs PWoH
 by age; `1B` PWoH by priming-vaccine generation; `2A` PWoH vs PWH by age; `2B`

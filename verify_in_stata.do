@@ -184,6 +184,29 @@ tab aP81 pt_pos, exact row
 restore
 
 di as txt "{hline 78}"
+di as res "6. HIV disease history -> 2025 serostatus (PWH only; 10_hiv_history.py)"
+di as txt "{hline 78}"
+* Expected (numbers/hiv_history.csv, hiv_history_model.csv):
+*   CD4 2025       <350 24/58 41.4% | 350-499 50/108 46.3% | >=500 186/358 52.0% | chi2 p=0.243
+*   CD4 at ART     <200 105/203 51.7% | 200-349 92/173 53.2% | >=350 34/72 47.2%  | chi2 p=0.696
+*   ART duration   <10 31/74 41.9% | 10-19 149/289 51.6% | >=20 62/109 56.9%      | chi2 p=0.136
+*   AIDS history   no 180/352 51.1% | yes 61/116 52.6%                            | Fisher p=0.831
+*   logistic (n=443): age/10 1.013, male 0.988, cd4_2025/100 1.006, cd4_art/100 0.992,
+*                     art/5y 1.117 (0.938-1.331, p=0.215), aids 1.140
+preserve
+import delimited "`priv'/output/hiv_history_cc.csv", clear varnames(1) case(preserve)
+tab cd4_now_cat pt_pos, chi2 row
+tab cd4_art_cat pt_pos, chi2 row
+tab art_cat pt_pos, chi2 row
+tab aids pt_pos, exact row
+gen double age10 = age/10
+gen double cd4_100 = cd4/100
+gen double cd4art_100 = cd4_art/100
+gen double art5 = art_years/5
+logistic pt_pos age10 male cd4_100 cd4art_100 art5 aids
+restore
+
+di as txt "{hline 78}"
 di as res "Done. Compare with numbers/*.csv."
 di as txt "{hline 78}"
 

@@ -28,6 +28,7 @@ STEPS = [
     ("06_cd4cd8_stratified", "PWH by baseline CD4/CD8 ratio"),
     ("07_table2_international", "Table 2: published comparators"),
     ("09_fig6_priming_generation", "PWoH by priming-vaccine generation"),
+    ("10_hiv_history", "HIV disease history and 2025 seropositivity within PWH"),
 ]
 OPTIONAL = {
     "--biobank": ("08_biobank_descriptive", "serum-bank component of PWoH set A"),

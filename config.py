@@ -103,10 +103,11 @@ KEY_NUMBERS = DIR_NUM / "key_numbers.json"
 ENV_FILE = DIR_NUM / "env.txt"
 
 # --- Figure file names. Change a name here and nowhere else.
-FIGURES = {
-    "age_pwoh_vs_pwh": "Fig1_age_pwoh_vs_pwh",    # seropositivity by age, PWoH vs PWH
-    "forest":          "Fig2_forest",              # multivariable model
-    "jihs_vs_pwoh":    "Fig3_jihs_vs_pwoh",        # general population 2023 vs PWoH 2025
+FIGURES = {   # numbering follows the order of analyses in the manuscript
+
+    "age_pwoh_vs_pwh": "Fig2_age_pwoh_vs_pwh",    # seropositivity by age, PWoH vs PWH
+    "forest":          "Fig3_forest",              # multivariable model
+    "jihs_vs_pwoh":    "Fig1_jihs_vs_pwoh",        # general population 2023 vs PWoH 2025
     "mcnemar_age":     "Fig4_mcnemar_age",         # PWH, paired 2021 vs 2025
     "cd48":            "Fig5_cd4cd8",              # PWH by baseline CD4/CD8 ratio
     "priming":         "Fig6_priming_generation",  # PWoH by priming-vaccine generation
@@ -276,6 +277,15 @@ EXPECTED = {
     "n_sx_cough": 22,
     "n_sx_prolonged": 9,
     "n_sx_altdx": 7,
+
+    # --- HIV disease history x 2025 seropositivity, within PWH (10_hiv_history.py) ---
+    #     "CD4 at ART initiation" is the value recorded at ART start, not a true nadir.
+    "hivhx_linked_n": 474,       # PWH 2025 linked to the 2021 baseline record sheet
+    "hivhx_model_n": 443,        # complete cases for the multivariable model
+    "hivhx_cd4now_p": 0.2425,    # chi2, <350 / 350-499 / >=500
+    "hivhx_cd4art_p": 0.6955,    # chi2, <200 / 200-349 / >=350
+    "hivhx_artdur_p": 0.1362,    # chi2, <10 / 10-19 / >=20 years
+    "hivhx_aids_p": 0.8307,      # Fisher, yes / no
 }
 
 # Tolerances: counts must match exactly; rounding differences are allowed elsewhere.

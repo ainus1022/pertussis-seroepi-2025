@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-09T04:08:01+00:00",
+  "generated_utc": "2026-10-18T07:45:37+00:00",
   "jihs_pdf_n": 903,
   "jihs_pdf_pos": 449,
   "jihs_pdf_high": 4,
@@ -70,6 +70,53 @@
   ],
   "priming_p": 0.0066,
   "priming_cohort_p": 0.474,
+  "hivhx_linked_n": 474,
+  "hivhx_model_n": 443,
+  "hivhx_controller_n": 1,
+  "hivhx_univariate_p": {
+    "cd4_now_cat": 0.2425,
+    "cd4_art_cat": 0.6955,
+    "art_cat": 0.1362,
+    "aids_cat": 0.8307
+  },
+  "hivhx_model": {
+    "age_per10": {
+      "aOR": 1.013,
+      "lci": 0.827,
+      "uci": 1.242,
+      "P": 0.8972
+    },
+    "male": {
+      "aOR": 0.988,
+      "lci": 0.406,
+      "uci": 2.403,
+      "P": 0.9792
+    },
+    "cd4_2025_per100": {
+      "aOR": 1.006,
+      "lci": 0.937,
+      "uci": 1.082,
+      "P": 0.8616
+    },
+    "cd4_art_per100": {
+      "aOR": 0.992,
+      "lci": 0.845,
+      "uci": 1.165,
+      "P": 0.9237
+    },
+    "art_per5y": {
+      "aOR": 1.117,
+      "lci": 0.938,
+      "uci": 1.331,
+      "P": 0.2148
+    },
+    "aids": {
+      "aOR": 1.14,
+      "lci": 0.674,
+      "uci": 1.928,
+      "P": 0.6245
+    }
+  },
   "biobank_n": 149,
   "biobank_pos_pct": 62.4,
   "biobank_gmc": 14.7,
@@ -88,9 +135,9 @@
     "n_jihs_2023": 903
   },
   "figure_names": {
-    "age_pwoh_vs_pwh": "Fig1_age_pwoh_vs_pwh",
-    "forest": "Fig2_forest",
-    "jihs_vs_pwoh": "Fig3_jihs_vs_pwoh",
+    "age_pwoh_vs_pwh": "Fig2_age_pwoh_vs_pwh",
+    "forest": "Fig3_forest",
+    "jihs_vs_pwoh": "Fig1_jihs_vs_pwoh",
     "mcnemar_age": "Fig4_mcnemar_age",
     "cd48": "Fig5_cd4cd8",
     "priming": "Fig6_priming_generation"
