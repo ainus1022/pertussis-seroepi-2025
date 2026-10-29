@@ -20,6 +20,7 @@ and are not publicly available.
 #     "serum_bank":  "/path/to/serum_bank_2025.xlsx",
 #     "symptoms":    "/path/to/respiratory_symptoms.xlsx",
 #     "jihs_pdf":    "/path/to/jihs_2023_survey.pdf",
+#     "cd8_2025":    "/path/to/cd8_2025.csv",   # columns: id, dob, cd8 (de-identified extract)
 # }
 
 # Rule (1): study IDs of participants measured twice (first measurement kept).

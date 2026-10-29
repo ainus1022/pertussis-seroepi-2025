@@ -19,8 +19,16 @@ ART start dates are hand-entered and heterogeneous. Parsing rules:
 The resulting error (at most +/- 0.5 years) does not affect the categories
 (<10 / 10-19 / >=20 years) or the 5-year continuous term.
 
-Input : output/analysis_master.csv, SRC_2021_CSV
+Added analyses (within PWH 2025):
+  - CD4/CD8 ratio at the 2025 sampling (CD8 from SRC_CD8_2025_CSV, linked on ID + date of
+    birth), <=0.5 vs >0.5, against 2025 seropositivity -> numbers/cd4cd8_2025.csv.
+    Read together with the 2021 baseline ratio (06).
+  - Priming-vaccine generation by birth year (<=1974 wP / 1975-81 transition / >=1982 aP;
+    same boundaries as 09) -> numbers/pwh_priming_generation.csv. Contrast with PWoH (09).
+
+Input : output/analysis_master.csv, SRC_2021_CSV, SRC_CD8_2025_CSV
 Output: numbers/hiv_history.csv (univariable), numbers/hiv_history_model.csv (multivariable),
+        numbers/cd4cd8_2025.csv, numbers/pwh_priming_generation.csv,
         output/hiv_history_cc.csv (per-participant input for verify_in_stata.do; private)
 """
 import re
@@ -95,6 +103,15 @@ def load_history() -> pd.DataFrame:
     return d[["id", "dob", "art_start", "art_parse", "art_naive", "aids", "cd4_art"]]
 
 
+def load_cd8_2025() -> pd.DataFrame:
+    """CD8 count at the 2025 sampling (de-identified extract), keyed on ID + date of birth."""
+    d = pd.read_csv(C.SRC_CD8_2025_CSV, parse_dates=["dob"])
+    d = d.dropna(subset=["id"]).copy()
+    d["id"] = d["id"].astype(str).str.upper().str.replace("-", "", regex=False).str.strip()
+    d = d.drop_duplicates(subset=["id", "dob"])
+    return d[["id", "dob", "cd8"]].rename(columns={"cd8": "cd8_2025"})
+
+
 def gmc(s):
     x = np.log(s.astype(float)); n = len(x)
     se = x.std(ddof=1) / np.sqrt(n); t = stats.t.ppf(0.975, n - 1)
@@ -142,6 +159,17 @@ def main():
     linked = p["aids"].notna() | p["cd4_art"].notna() | p["art_start"].notna()
     print(f"  PWH linked to the 2021 record sheet: {int(linked.sum())}/{len(p)}")
 
+    # 2025 CD8 -> 2025 CD4/CD8 ratio
+    c8 = load_cd8_2025()
+    p = p.merge(c8, on=["id", "dob"], how="left")
+    assert len(p) == C.EXPECTED["n_pwh_2025"], "row count changed on CD8 merge"
+    p["cd48_ratio_2025"] = p["cd4"] / p["cd8_2025"]
+    print(f"  2025 CD8 available: {int(p['cd8_2025'].notna().sum())}/{len(p)}")
+
+    # priming-vaccine generation (same boundaries as 09)
+    by = p["dob"].dt.year
+    p["generation"] = np.where(by <= 1974, "wP", np.where(by >= 1982, "aP", "transition"))
+
     p["art_years"] = (p["draw_date"] - p["art_start"]).dt.days / 365.25
     p["cd4_art_cat"] = pd.cut(p["cd4_art"], CD4_ART_BINS, labels=CD4_ART_LABELS)
     p["art_cat"] = pd.cut(p["art_years"], ART_YR_BINS, labels=ART_YR_LABELS)
@@ -152,7 +180,7 @@ def main():
 
     # per-participant file for the Stata recomputation (no identifiers; output/ is private)
     cols = ["pt_pos", "pt", "age", "male", "cd4", "cd4_art", "art_years", "aids",
-            "cd4_now_cat", "cd4_art_cat", "art_cat"]
+            "cd4_now_cat", "cd4_art_cat", "art_cat", "cd8_2025", "cd48_ratio_2025", "generation"]
     p[cols].to_csv(C.DIR_OUT / "hiv_history_cc.csv", index=False)
 
     rows = []; pvals = {}
@@ -187,15 +215,90 @@ def main():
     mod.to_csv(C.DIR_NUM / "hiv_history_model.csv", index=False)
     print(f"\n  multivariable (n={len(cc)}):\n" + mod.to_string(index=False))
 
+    # 2025 CD4/CD8 ratio (<=0.5 / >0.5) x 2025 seropositivity
+    r = p.dropna(subset=["cd48_ratio_2025"]).copy()
+    r["stratum"] = np.where(r["cd48_ratio_2025"] <= C.CD48_CUT, "low", "high")
+    lo = r[r["stratum"] == "low"]; hi = r[r["stratum"] == "high"]
+    tab = np.array([[lo["pt_pos"].sum(), len(lo) - lo["pt_pos"].sum()],
+                    [hi["pt_pos"].sum(), len(hi) - hi["pt_pos"].sum()]])
+    or25, p25 = stats.fisher_exact(tab)
+    p25_mwu = stats.mannwhitneyu(lo["pt"], hi["pt"], alternative="two-sided").pvalue
+    Xr = sm.add_constant(pd.DataFrame({"age_per10": r["age"] / 10, "male": r["male"].astype(float),
+                                       "ratio": r["cd48_ratio_2025"]}))
+    fr = sm.Logit(r["pt_pos"].astype(float), Xr).fit(disp=0)
+    cir = np.exp(fr.conf_int().loc["ratio"])
+    g_lo = gmc(lo["pt"]); g_hi = gmc(hi["pt"])
+    out25 = pd.DataFrame([
+        {"stratum": f"CD4/CD8 2025 <={C.CD48_CUT}", "N": len(lo), "seropositive_n": int(lo["pt_pos"].sum()),
+         "seropositive_pct": round(100 * lo["pt_pos"].mean(), 1), "GMC": round(g_lo[0], 1),
+         "GMC_lci": round(g_lo[1], 1), "GMC_uci": round(g_lo[2], 1), "PT_median": lo["pt"].median()},
+        {"stratum": f"CD4/CD8 2025 >{C.CD48_CUT}", "N": len(hi), "seropositive_n": int(hi["pt_pos"].sum()),
+         "seropositive_pct": round(100 * hi["pt_pos"].mean(), 1), "GMC": round(g_hi[0], 1),
+         "GMC_lci": round(g_hi[1], 1), "GMC_uci": round(g_hi[2], 1), "PT_median": hi["pt"].median()},
+    ])
+    out25["OR_fisher"] = [round(float(or25), 3), ""]
+    out25["P_fisher"] = [round(float(p25), 4), ""]
+    out25["P_mwu"] = [round(float(p25_mwu), 4), ""]
+    out25["aOR_per_unit_age_sex_adj"] = [round(float(np.exp(fr.params["ratio"])), 3), ""]
+    out25["aOR_lci"] = [round(float(cir[0]), 3), ""]; out25["aOR_uci"] = [round(float(cir[1]), 3), ""]
+    out25["aOR_P"] = [round(float(fr.pvalues["ratio"]), 4), ""]
+    out25["ratio_median_2025"] = [round(float(r["cd48_ratio_2025"].median()), 2), ""]
+    both = r.dropna(subset=["cd48_ratio_2021"])
+    rho = stats.spearmanr(both["cd48_ratio_2021"], both["cd48_ratio_2025"]).statistic
+    out25["spearman_2021_vs_2025"] = [round(float(rho), 3), ""]; out25["n_both_ratios"] = [len(both), ""]
+    out25.to_csv(C.DIR_NUM / "cd4cd8_2025.csv", index=False)
+    print(f"\n  2025 CD4/CD8 ratio: <=0.5 n={len(lo)} {100*lo['pt_pos'].mean():.1f}% / >0.5 n={len(hi)} "
+          f"{100*hi['pt_pos'].mean():.1f}%  Fisher p={p25:.3f}, MWU p={p25_mwu:.3f}, "
+          f"aOR/unit {np.exp(fr.params['ratio']):.2f} (p={fr.pvalues['ratio']:.3f}); "
+          f"Spearman rho vs 2021 ratio={rho:.2f} (n={len(both)})")
+    C.check("cd48_2025_n", len(r), label="2025 CD4/CD8 n")
+    C.check("cd48_2025_low_n", len(lo), label="2025 ratio <=0.5 N")
+    C.check("cd48_2025_high_n", len(hi), label="2025 ratio >0.5 N")
+    C.check_pct("cd48_2025_low_pos_pct", 100 * lo["pt_pos"].mean(), label="2025 ratio <=0.5 seropositive %")
+    C.check_pct("cd48_2025_high_pos_pct", 100 * hi["pt_pos"].mean(), label="2025 ratio >0.5 seropositive %")
+    C.check("cd48_2025_fisher_p", float(p25), label="2025 ratio Fisher p")
+    C.check("cd48_2025_mwu_p", float(p25_mwu), label="2025 ratio MWU p")
+
+    # priming-vaccine generation within PWH
+    rows_g = []
+    for gname in ("wP", "transition", "aP"):
+        g = p[p["generation"] == gname]
+        gm = gmc(g["pt"])
+        rows_g.append({"generation": gname, "N": len(g), "seropositive_n": int(g["pt_pos"].sum()),
+                       "seropositive_pct": round(100 * g["pt_pos"].mean(), 1),
+                       "GMC": round(gm[0], 1), "GMC_lci": round(gm[1], 1), "GMC_uci": round(gm[2], 1)})
+    ga = p[p["generation"] == "aP"]; gw = p[p["generation"] == "wP"]
+    tabg = np.array([[ga["pt_pos"].sum(), len(ga) - ga["pt_pos"].sum()],
+                     [gw["pt_pos"].sum(), len(gw) - gw["pt_pos"].sum()]])
+    org, pg = stats.fisher_exact(tabg)
+    outg = pd.DataFrame(rows_g)
+    outg["OR_aP_vs_wP"] = [round(float(org), 3), "", ""]
+    outg["P_fisher_aP_vs_wP"] = [round(float(pg), 4), "", ""]
+    outg.to_csv(C.DIR_NUM / "pwh_priming_generation.csv", index=False)
+    print("\n  PWH by priming generation:\n" + outg.to_string(index=False))
+    C.check("pwh_gen_ap_n", len(ga), label="PWH aP N")
+    C.check("pwh_gen_wp_n", len(gw), label="PWH wP N")
+    C.check("pwh_gen_trans_n", int((p["generation"] == "transition").sum()), label="PWH transition N")
+    C.check_pct("pwh_gen_ap_pos_pct", 100 * ga["pt_pos"].mean(), label="PWH aP seropositive %")
+    C.check_pct("pwh_gen_wp_pos_pct", 100 * gw["pt_pos"].mean(), label="PWH wP seropositive %")
+    C.check("pwh_gen_fisher_p", float(pg), label="PWH aP vs wP Fisher p")
+
     C.check("hivhx_linked_n", int(linked.sum()), label="linked to 2021 sheet")
     C.check("hivhx_model_n", len(cc), label="HIV-history model n")
     C.check("hivhx_cd4art_p", pvals["cd4_art_cat"][0], label="CD4 at ART P")
     C.check("hivhx_artdur_p", pvals["art_cat"][0], label="ART duration P")
     C.check("hivhx_aids_p", pvals["aids_cat"][0], label="AIDS history P")
     C.check("hivhx_cd4now_p", pvals["cd4_now_cat"][0], label="CD4 2025 P")
-    print("  -> numbers/hiv_history.csv, numbers/hiv_history_model.csv")
+    print("  -> numbers/hiv_history.csv, numbers/hiv_history_model.csv, numbers/cd4cd8_2025.csv, "
+          "numbers/pwh_priming_generation.csv")
 
     return {"hivhx_linked_n": int(linked.sum()), "hivhx_model_n": len(cc),
+            "cd48_2025": {"n": len(r), "low_pct": round(100 * lo["pt_pos"].mean(), 1),
+                          "high_pct": round(100 * hi["pt_pos"].mean(), 1), "fisher_p": round(float(p25), 4),
+                          "mwu_p": round(float(p25_mwu), 4), "aOR_per_unit": round(float(np.exp(fr.params["ratio"])), 3),
+                          "aOR_p": round(float(fr.pvalues["ratio"]), 4), "spearman_vs_2021": round(float(rho), 3)},
+            "pwh_generation": {"aP_pct": round(100 * ga["pt_pos"].mean(), 1), "wP_pct": round(100 * gw["pt_pos"].mean(), 1),
+                               "fisher_p": round(float(pg), 4)},
             "hivhx_controller_n": n_controller,
             "hivhx_univariate_p": {k: round(v[0], 4) for k, v in pvals.items()},
             "hivhx_model": {t: {"aOR": a, "lci": l, "uci": u, "P": pp}

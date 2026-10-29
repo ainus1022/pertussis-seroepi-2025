@@ -1,0 +1,4 @@
+generation,N,seropositive_n,seropositive_pct,GMC,GMC_lci,GMC_uci,OR_aP_vs_wP,P_fisher_aP_vs_wP
+wP,317,165,52.1,11.2,10.1,12.5,0.629,0.0438
+transition,105,56,53.3,10.2,8.6,12.1,,
+aP,106,43,40.6,8.9,7.5,10.6,,

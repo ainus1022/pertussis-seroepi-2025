@@ -75,6 +75,7 @@ INPUTS = {
     "serum_bank": PRIVATE_DIR / "input" / "serum_bank_2025.xlsx",    # serum-bank PWoH
     "symptoms": PRIVATE_DIR / "input" / "respiratory_symptoms.xlsx", # chart review
     "jihs_pdf": PRIVATE_DIR / "input" / "jihs_2023_survey.pdf",      # public report (optional)
+    "cd8_2025": PRIVATE_DIR / "input" / "cd8_2025.csv",              # PWH CD8 at the 2025 sampling
 }
 if _PRIV is not None and hasattr(_PRIV, "INPUTS"):
     INPUTS.update({k: Path(v) for k, v in _PRIV.INPUTS.items()})
@@ -87,6 +88,7 @@ SRC_BIOBANK_SHEET = "個票_n150"
 SRC_SYMPTOM_XLSX = INPUTS["symptoms"]
 SRC_SYMPTOM_SHEET = "呼吸器症状有無"
 SRC_JIHS_PDF = INPUTS["jihs_pdf"]
+SRC_CD8_2025_CSV = INPUTS["cd8_2025"]   # de-identified extract: id, dob, cd8 (other columns ignored)
 
 # Age-specific anti-PT IgG distribution, general population, Japan, fiscal year 2023
 # (National Epidemiological Surveillance of Vaccine-Preventable Diseases, Table 3-1).
@@ -103,14 +105,14 @@ KEY_NUMBERS = DIR_NUM / "key_numbers.json"
 ENV_FILE = DIR_NUM / "env.txt"
 
 # --- Figure file names. Change a name here and nowhere else.
-FIGURES = {   # numbering follows the order of analyses in the manuscript
-
-    "age_pwoh_vs_pwh": "Fig2_age_pwoh_vs_pwh",    # seropositivity by age, PWoH vs PWH
-    "forest":          "Fig3_forest",              # multivariable model
-    "jihs_vs_pwoh":    "Fig1_jihs_vs_pwoh",        # general population 2023 vs PWoH 2025
-    "mcnemar_age":     "Fig4_mcnemar_age",         # PWH, paired 2021 vs 2025
-    "cd48":            "Fig5_cd4cd8",              # PWH by baseline CD4/CD8 ratio
-    "priming":         "Fig6_priming_generation",  # PWoH by priming-vaccine generation
+FIGURES = {   # numbering follows the order of figures in the manuscript
+    "flow":            "Fig1_participant_flow",    # participants and analysis sets
+    "jihs_vs_pwoh":    "Fig2_jihs_vs_pwoh",        # general population 2023 vs PWoH 2025
+    "age_pwoh_vs_pwh": "Fig3_age_pwoh_vs_pwh",     # seropositivity by age, PWoH vs PWH
+    "forest":          "Fig4_forest",              # multivariable model
+    "mcnemar_age":     "Fig5_mcnemar_age",         # PWH, paired 2021 vs 2025
+    "cd48":            "Fig6_cd4cd8",              # PWH by baseline CD4/CD8 ratio
+    "priming":         "Fig7_priming_generation",  # PWoH by priming-vaccine generation
 }
 
 
@@ -286,6 +288,22 @@ EXPECTED = {
     "hivhx_cd4art_p": 0.6955,    # chi2, <200 / 200-349 / >=350
     "hivhx_artdur_p": 0.1362,    # chi2, <10 / 10-19 / >=20 years
     "hivhx_aids_p": 0.8307,      # Fisher, yes / no
+    # --- CD4/CD8 ratio at the 2025 sampling, within PWH (10_hiv_history.py) ---
+    "cd48_2025_n": 521,          # PWH 2025 with a 2025 CD8 count (of 528)
+    "cd48_2025_low_n": 74, "cd48_2025_low_pos_pct": 41.9,
+    "cd48_2025_high_n": 447, "cd48_2025_high_pos_pct": 51.0,
+    "cd48_2025_fisher_p": 0.168,
+    "cd48_2025_mwu_p": 0.053,
+    # --- priming-vaccine generation within PWH (aP born >=1982 vs wP born <=1974) ---
+    "pwh_gen_ap_n": 106, "pwh_gen_ap_pos_pct": 40.6,
+    "pwh_gen_wp_n": 317, "pwh_gen_wp_pos_pct": 52.1,
+    "pwh_gen_trans_n": 105,
+    "pwh_gen_fisher_p": 0.044,
+    # --- raw row counts drawn in the participant flow (11_flowchart.py; figure input, not checked) ---
+    "n_2025_raw": 831,           # 2025 records before de-duplication
+    "n_2025_dup_removed": 2,     # second samples from the same person (831 -> 829)
+    "n_2021_raw": 486,           # 2021 records, including 15 without anti-PT IgG (-> 471)
+    "jihs_total_n": 1472,        # JIHS 2023 Table 3-1, all ages (adults: jihs_pdf_n)
 }
 
 # Tolerances: counts must match exactly; rounding differences are allowed elsewhere.

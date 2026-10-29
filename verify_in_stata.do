@@ -206,6 +206,20 @@ gen double art5 = art_years/5
 logistic pt_pos age10 male cd4_100 cd4art_100 art5 aids
 restore
 
+* 6b. 2025 CD4/CD8 ratio and priming generation within PWH
+*     Expected: ratio<=0.5 31/74 41.9% vs >0.5 228/447 51.0%, Fisher p=0.168, ranksum p~0.053
+*               aP 43/106 40.6% vs wP 165/317 52.1%, Fisher p=0.044
+preserve
+import delimited "`priv'/output/hiv_history_cc.csv", clear varnames(1) case(preserve)
+gen byte low25 = (cd48_ratio_2025 <= 0.5) if !missing(cd48_ratio_2025)
+tab low25 pt_pos, exact row
+ranksum pt, by(low25)
+gen double age10 = age/10
+logistic pt_pos age10 male cd48_ratio_2025
+tab generation pt_pos, row
+tab generation pt_pos if generation != "transition", exact row
+restore
+
 di as txt "{hline 78}"
 di as res "Done. Compare with numbers/*.csv."
 di as txt "{hline 78}"

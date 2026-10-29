@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-18T07:45:37+00:00",
+  "generated_utc": "2026-10-29T06:06:25+00:00",
   "jihs_pdf_n": 903,
   "jihs_pdf_pos": 449,
   "jihs_pdf_high": 4,
@@ -72,6 +72,21 @@
   "priming_cohort_p": 0.474,
   "hivhx_linked_n": 474,
   "hivhx_model_n": 443,
+  "cd48_2025": {
+    "n": 521,
+    "low_pct": 41.9,
+    "high_pct": 51.0,
+    "fisher_p": 0.1677,
+    "mwu_p": 0.053,
+    "aOR_per_unit": 1.349,
+    "aOR_p": 0.0822,
+    "spearman_vs_2021": 0.834
+  },
+  "pwh_generation": {
+    "aP_pct": 40.6,
+    "wP_pct": 52.1,
+    "fisher_p": 0.0438
+  },
   "hivhx_controller_n": 1,
   "hivhx_univariate_p": {
     "cd4_now_cat": 0.2425,
@@ -117,6 +132,15 @@
       "P": 0.6245
     }
   },
+  "flow_numbers": {
+    "raw_2025": 831,
+    "dup_removed": 2,
+    "pwh": 528,
+    "pwoh_a": 450,
+    "pwoh_b": 301,
+    "bb": 149,
+    "jihs_adult": 903
+  },
   "biobank_n": 149,
   "biobank_pos_pct": 62.4,
   "biobank_gmc": 14.7,
@@ -135,12 +159,13 @@
     "n_jihs_2023": 903
   },
   "figure_names": {
-    "age_pwoh_vs_pwh": "Fig2_age_pwoh_vs_pwh",
-    "forest": "Fig3_forest",
-    "jihs_vs_pwoh": "Fig1_jihs_vs_pwoh",
-    "mcnemar_age": "Fig4_mcnemar_age",
-    "cd48": "Fig5_cd4cd8",
-    "priming": "Fig6_priming_generation"
+    "flow": "Fig1_participant_flow",
+    "jihs_vs_pwoh": "Fig2_jihs_vs_pwoh",
+    "age_pwoh_vs_pwh": "Fig3_age_pwoh_vs_pwh",
+    "forest": "Fig4_forest",
+    "mcnemar_age": "Fig5_mcnemar_age",
+    "cd48": "Fig6_cd4cd8",
+    "priming": "Fig7_priming_generation"
   },
   "match_algorithm": "1:1 nearest-neighbour matching on age within a ±3-year caliper, without replacement; PWH processed in ascending order of age (ties broken by participant ID); restricted to the Analysis-2 complete-case set; conditional odds ratio from discordant pairs (exact binomial test)."
 }
