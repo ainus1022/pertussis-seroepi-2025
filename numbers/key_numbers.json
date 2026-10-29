@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-29T06:06:25+00:00",
+  "generated_utc": "2026-10-29T06:37:57+00:00",
   "jihs_pdf_n": 903,
   "jihs_pdf_pos": 449,
   "jihs_pdf_high": 4,
@@ -78,9 +78,9 @@
     "high_pct": 51.0,
     "fisher_p": 0.1677,
     "mwu_p": 0.053,
-    "aOR_per_unit": 1.349,
-    "aOR_p": 0.0822,
-    "spearman_vs_2021": 0.834
+    "aOR_per_unit": 1.751,
+    "aOR_p": 0.004,
+    "spearman_vs_2021": 0.84
   },
   "pwh_generation": {
     "aP_pct": 40.6,
@@ -89,47 +89,47 @@
   },
   "hivhx_controller_n": 1,
   "hivhx_univariate_p": {
-    "cd4_now_cat": 0.2425,
+    "cd4_now_cat": 0.2158,
     "cd4_art_cat": 0.6955,
     "art_cat": 0.1362,
     "aids_cat": 0.8307
   },
   "hivhx_model": {
     "age_per10": {
-      "aOR": 1.013,
-      "lci": 0.827,
-      "uci": 1.242,
-      "P": 0.8972
+      "aOR": 1.015,
+      "lci": 0.829,
+      "uci": 1.244,
+      "P": 0.8828
     },
     "male": {
-      "aOR": 0.988,
-      "lci": 0.406,
-      "uci": 2.403,
-      "P": 0.9792
+      "aOR": 1.006,
+      "lci": 0.413,
+      "uci": 2.448,
+      "P": 0.9898
     },
     "cd4_2025_per100": {
-      "aOR": 1.006,
-      "lci": 0.937,
-      "uci": 1.082,
-      "P": 0.8616
+      "aOR": 1.044,
+      "lci": 0.955,
+      "uci": 1.141,
+      "P": 0.3471
     },
     "cd4_art_per100": {
-      "aOR": 0.992,
-      "lci": 0.845,
-      "uci": 1.165,
-      "P": 0.9237
+      "aOR": 0.97,
+      "lci": 0.825,
+      "uci": 1.141,
+      "P": 0.7162
     },
     "art_per5y": {
-      "aOR": 1.117,
-      "lci": 0.938,
-      "uci": 1.331,
-      "P": 0.2148
+      "aOR": 1.11,
+      "lci": 0.931,
+      "uci": 1.323,
+      "P": 0.2446
     },
     "aids": {
-      "aOR": 1.14,
-      "lci": 0.674,
-      "uci": 1.928,
-      "P": 0.6245
+      "aOR": 1.141,
+      "lci": 0.675,
+      "uci": 1.931,
+      "P": 0.6221
     }
   },
   "flow_numbers": {

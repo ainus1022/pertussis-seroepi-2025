@@ -196,7 +196,7 @@ EXPECTED = {
     "pwh_male_pct": 95.6,
     "pwh_lym_median": 1840, "pwoh_lym_median": 1610,
     "pwh_wbc_median": 5450,
-    "pwh_cd4_median": 595,
+    "pwh_cd4_median": 593.5,
     "pwh_vl_supp_n": 494, "pwh_vl_supp_denom": 524,   # HIV-RNA < 50 copies/mL
     "pwoh_liver_n": 139,
     "pwoh_metabolic_n": 54,
@@ -284,7 +284,7 @@ EXPECTED = {
     #     "CD4 at ART initiation" is the value recorded at ART start, not a true nadir.
     "hivhx_linked_n": 474,       # PWH 2025 linked to the 2021 baseline record sheet
     "hivhx_model_n": 443,        # complete cases for the multivariable model
-    "hivhx_cd4now_p": 0.2425,    # chi2, <350 / 350-499 / >=500
+    "hivhx_cd4now_p": 0.2158,    # chi2, <350 / 350-499 / >=500
     "hivhx_cd4art_p": 0.6955,    # chi2, <200 / 200-349 / >=350
     "hivhx_artdur_p": 0.1362,    # chi2, <10 / 10-19 / >=20 years
     "hivhx_aids_p": 0.8307,      # Fisher, yes / no

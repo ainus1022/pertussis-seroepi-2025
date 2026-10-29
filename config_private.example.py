@@ -34,6 +34,12 @@ ID_TYPO_FIX = [
     ("YYY0002", "1900-01-01", "YYY0003"),
 ]
 
+# Rule (4): documented transcription errors in a value:
+#   (ID, date of birth or None, column, wrong value, corrected value).
+VALUE_FIX = [
+    ("YYY0004", None, "cd4", 1000, 100),
+]
+
 # Hand-coded respiratory-symptom categories (sample numbers from the chart review).
 SX_COUGH = {"D-000", "D-001"}             # cough or sputum recorded
 SX_PROLONGED = {"D-000"}                  # cough >= 2 weeks or persistent (subset of SX_COUGH)

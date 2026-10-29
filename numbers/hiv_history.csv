@@ -1,7 +1,7 @@
 variable,level,N,seropositive_n,seropositive_pct,GMC,GMC_lci,GMC_uci,PT_median,test_pos,P_pos,test_titre,P_titre,N_missing
-CD4 2025 (cells/uL),<350,58,24,41.4,9.2,6.7,12.6,7.5,chi2,0.2425,KW,0.0733,4.0
-CD4 2025 (cells/uL),350-499,108,50,46.3,9.3,7.9,11.0,9.0,,,,,
-CD4 2025 (cells/uL),>=500,358,186,52.0,11.0,10.0,12.1,10.0,,,,,
+CD4 2025 (cells/uL),<350,58,24,41.4,9.2,6.7,12.6,7.5,chi2,0.2158,KW,0.0626,4.0
+CD4 2025 (cells/uL),350-499,109,50,45.9,9.3,7.9,10.9,9.0,,,,,
+CD4 2025 (cells/uL),>=500,357,186,52.1,11.0,10.0,12.1,10.0,,,,,
 CD4 at ART initiation (cells/uL),<200,203,105,51.7,11.4,9.9,13.1,10.0,chi2,0.6955,KW,0.6568,80.0
 CD4 at ART initiation (cells/uL),200-349,173,92,53.2,10.9,9.6,12.4,10.0,,,,,
 CD4 at ART initiation (cells/uL),>=350,72,34,47.2,10.2,8.0,13.0,8.5,,,,,

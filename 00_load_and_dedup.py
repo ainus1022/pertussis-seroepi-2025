@@ -44,6 +44,16 @@ def load_2025() -> pd.DataFrame:
         d.loc[m, "id"] = right
         print("  [rule 3] mistyped study ID corrected: 1 record")
 
+    # --- Rule (4): documented transcription errors in a value (raw records are not edited) ---
+    for vid, vdob, col, wrong_v, right_v in C.private("VALUE_FIX"):
+        m = (d["id"] == vid) & (d[col] == wrong_v)
+        if vdob is not None:
+            m &= (d["dob"] == pd.Timestamp(vdob))
+        if m.sum() != 1:
+            raise AssertionError(f"value correction ({col}): {m.sum()} matching records (expected exactly 1)")
+        d.loc[m, col] = right_v
+        print(f"  [rule 4] transcription error in {col} corrected: 1 record")
+
     # --- Group membership comes from the study-ID prefix, not the diagnosis field ---
     d["group"] = np.where(d["id"].str.startswith(C.ID_PREFIX_PWH), "PWH", "PWoH")
 

@@ -1,6 +1,6 @@
 Study,Region,n,Age,CD4,Cutoff,Unit,Seropositive %,GMC,PMID
 Troy 2016,USA,299,45.1 (mean),633 (mean),IU/mL,94,4.3,10.6,27105050
 Moosa 2025,South Africa (PHIRST; not HIV-specific),240 PWH / 1570,>=65: 4.5%,-,IU/mL,100,3.9-5.2,-,40645456
-This study 2025 (PWH),Japan,528,53 (median),595 (median),10,EU/mL,50.0,10.5,-
+This study 2025 (PWH),Japan,528,53 (median),594 (median),10,EU/mL,50.0,10.5,-
 "  (this study PWH, high cutoffs)",Japan,528,,,94 / 100,EU/mL,2.8 / 2.5,10.5,-
 "  (this study PWH, 2021)",Japan,471,,,94 / 100,EU/mL,0.2 / 0.2,9.2,-
