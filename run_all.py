@@ -30,6 +30,7 @@ STEPS = [
     ("09_fig6_priming_generation", "PWoH by priming-vaccine generation"),
     ("10_hiv_history", "HIV disease history and 2025 seropositivity within PWH"),
     ("11_flowchart", "Figure 1: participant flow (drawn from the frozen n in config.EXPECTED)"),
+    ("12_priming_thresholds", "Suppl. Table S1: priming generation x anti-PT IgG threshold (>=10/50/100)"),
 ]
 OPTIONAL = {
     "--biobank": ("08_biobank_descriptive", "serum-bank component of PWoH set A"),

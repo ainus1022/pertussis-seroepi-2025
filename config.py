@@ -151,6 +151,7 @@ ASSAY_METHOD = "EIA"
 CUT_POS = 10                   # anti-PT IgG >= 10: seropositive (primary outcome)
 CUT_HIGH = 100                 # anti-PT IgG >= 100: high titre (same definition as the JIHS survey)
 CUT_MULTI = [10, 15, 20, 40]   # cut-offs used by the comparator studies in Table 2
+PRIMING_THRESHOLD_CUTS = [10, 50, 100]   # Suppl. Table S1: thresholds by priming generation
 
 # Upper limit of quantification (right-censoring). In the raw laboratory export
 # these values carry a leading non-breaking space and must be cleaned before
@@ -304,6 +305,26 @@ EXPECTED = {
     "n_2025_dup_removed": 2,     # second samples from the same person (831 -> 829)
     "n_2021_raw": 486,           # 2021 records, including 15 without anti-PT IgG (-> 471)
     "jihs_total_n": 1472,        # JIHS 2023 Table 3-1, all ages (adults: jihs_pdf_n)
+    # --- Suppl. Table S1: priming generation x anti-PT IgG threshold (12_priming_thresholds.py;
+    #     >= 10 is checked by the keys of 09 / 10) ---
+    # PWoH set A (n=450)
+    "primthr_pwoh_wp_ge50_n": 34,    "primthr_pwoh_wp_ge50_pct": 12.5,
+    "primthr_pwoh_trans_ge50_n": 9,  "primthr_pwoh_trans_ge50_pct": 17.3,
+    "primthr_pwoh_ap_ge50_n": 16,    "primthr_pwoh_ap_ge50_pct": 12.8,
+    "primthr_pwoh_wp_ge100_n": 10,   "primthr_pwoh_wp_ge100_pct": 3.7,
+    "primthr_pwoh_trans_ge100_n": 3, "primthr_pwoh_trans_ge100_pct": 5.8,
+    "primthr_pwoh_ap_ge100_n": 1,    "primthr_pwoh_ap_ge100_pct": 0.8,
+    "primthr_pwoh_ge50_fisher_p": 1.0,
+    "primthr_pwoh_ge100_fisher_p": 0.1845,
+    # PWH (n=528)
+    "primthr_pwh_wp_ge50_n": 29,     "primthr_pwh_wp_ge50_pct": 9.1,
+    "primthr_pwh_trans_ge50_n": 6,   "primthr_pwh_trans_ge50_pct": 5.7,
+    "primthr_pwh_ap_ge50_n": 5,      "primthr_pwh_ap_ge50_pct": 4.7,
+    "primthr_pwh_wp_ge100_n": 9,     "primthr_pwh_wp_ge100_pct": 2.8,
+    "primthr_pwh_trans_ge100_n": 3,  "primthr_pwh_trans_ge100_pct": 2.9,
+    "primthr_pwh_ap_ge100_n": 1,     "primthr_pwh_ap_ge100_pct": 0.9,
+    "primthr_pwh_ge50_fisher_p": 0.2140,
+    "primthr_pwh_ge100_fisher_p": 0.4627,
 }
 
 # Tolerances: counts must match exactly; rounding differences are allowed elsewhere.
@@ -508,6 +529,7 @@ PWOH_SET_BY_ANALYSIS = {
     "07_table2_international":    "A",
     "08_biobank_descriptive":     "biobank",
     "09_fig6_priming_generation": "A",
+    "12_priming_thresholds":      "A",
 }
 
 # Variables that cannot be reported for set A (structurally missing in the serum bank).

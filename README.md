@@ -59,6 +59,7 @@ the aggregate results inspected, but the pipeline cannot be re-run.
 | `09_fig6_priming_generation.py` | PWoH by priming-vaccine generation (whole-cell vs acellular) | `priming_*.csv`, Fig7 |
 | `10_hiv_history.py` | PWH: CD4 at ART initiation, ART duration, AIDS history and current CD4 vs 2025 seropositivity; 2025 CD4/CD8 ratio; priming-vaccine generation within PWH | `hiv_history*.csv`, `cd4cd8_2025.csv`, `pwh_priming_generation.csv` |
 | `11_flowchart.py` | Participant flow and analysis sets | Fig1 |
+| `12_priming_thresholds.py` | Supplementary Table S1: anti-PT IgG ≥ 10 / ≥ 50 / ≥ 100 EU/mL by priming-vaccine generation, PWoH set A and PWH | `priming_thresholds.csv` |
 
 Figure file names carry the figure numbers of the manuscript (Fig1 participant
 flow; Fig2 general population vs PWoH; Fig3 PWoH vs PWH by age; Fig4 multivariable

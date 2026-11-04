@@ -221,6 +221,29 @@ tab generation pt_pos, row
 tab generation pt_pos if generation != "transition", exact row
 restore
 
+*------------------------------------------------------------------------------
+* 7. Suppl. Table S1: priming generation x anti-PT IgG threshold
+*    Expected PWoH: wP 34/273 12.5% & 10/273 3.7% ; aP 16/125 12.8% & 1/125 0.8%
+*                   aP vs wP: >=50 p=1.0000 ; >=100 p=0.1845
+*    Expected PWH : wP 29/317 9.1% & 9/317 2.8% ; aP 5/106 4.7% & 1/106 0.9%
+*                   aP vs wP: >=50 p=0.2140 ; >=100 p=0.4627
+*------------------------------------------------------------------------------
+di as txt "{hline 78}"
+di as res "7. Suppl. Table S1: priming generation x anti-PT IgG threshold (12_priming_thresholds.py)"
+di as txt "{hline 78}"
+preserve
+import delimited "`priv'/output/priming_thresholds_cc.csv", clear varnames(1) case(preserve)
+gen byte ge50  = (pt >= 50)
+gen byte ge100 = (pt >= 100)
+foreach pop in "PWoH" "PWH" {
+    di as txt "=== `pop' ==="
+    tab generation ge50  if population=="`pop'", row
+    tab generation ge100 if population=="`pop'", row
+    tab generation ge50  if population=="`pop'" & generation!="transition", exact row
+    tab generation ge100 if population=="`pop'" & generation!="transition", exact row
+}
+restore
+
 di as txt "{hline 78}"
 di as res "Done. Compare with numbers/*.csv."
 di as txt "{hline 78}"

@@ -1,0 +1,7 @@
+population,generation,N,age_median,ge10_n,ge10_pct,ge50_n,ge50_pct,ge100_n,ge100_pct,ge10_OR_aP_vs_wP,ge10_P_fisher,ge50_OR_aP_vs_wP,ge50_P_fisher,ge100_OR_aP_vs_wP,ge100_P_fisher
+PWoH set A,wP,273,66.0,187,68.5,34,12.5,10,3.7,,,,,,
+PWoH set A,transition,52,47.0,33,63.5,9,17.3,3,5.8,,,,,,
+PWoH set A,aP,125,34.0,68,54.4,16,12.8,1,0.8,0.549,0.0071,1.032,1.0,0.212,0.1845
+PWH,wP,317,58.0,165,52.1,29,9.1,9,2.8,,,,,,
+PWH,transition,105,47.0,56,53.3,6,5.7,3,2.9,,,,,,
+PWH,aP,106,38.0,43,40.6,5,4.7,1,0.9,0.629,0.0438,0.492,0.214,0.326,0.4627
