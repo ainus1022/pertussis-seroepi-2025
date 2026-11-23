@@ -11,6 +11,9 @@ group, sits in the centre and the external reference at the right. One box, one 
 Exclusions follow CONSORT: the main arrow runs straight down and the exclusion box
 hangs to its right.
 
+Drawn at print size (C.FIG_W wide; coordinates in inches). After drawing,
+check_fit() stops the run if any text runs outside its box.
+
 Output: figures/<FIGURES["flow"]>.pdf/.png
 """
 import sys
@@ -31,117 +34,144 @@ JIHS_ALL = E["jihs_total_n"]
 JIHS_ADULT = E["jihs_pdf_n"]
 
 INK = C.PALETTE.get("ink", "#222222")
+_BOXES = []   # (patch, text) pairs, checked for overflow after drawing
 
 
-def box(ax, x, y, w, h, text, fc="white", ec=INK, fs=8.5, bold=False):
-    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02,rounding_size=0.12",
-                                fc=fc, ec=ec, lw=1.0))
-    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs,
-            fontweight="bold" if bold else "normal", linespacing=1.3)
+def box(ax, x, y, w, h, text, fc="white", ec=INK, fs=None, bold=False):
+    fs = fs or C.FS["box"]
+    p = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0,rounding_size=0.03",
+                       fc=fc, ec=ec, lw=0.8)
+    ax.add_patch(p)
+    t = ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs,
+                fontweight="bold" if bold else "normal", linespacing=1.25)
+    _BOXES.append((p, t))
 
 
 def arrow(ax, x0, y0, x1, y1):
     ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
-                arrowprops=dict(arrowstyle="-|>", lw=1.0, color=INK, shrinkA=0, shrinkB=0))
+                arrowprops=dict(arrowstyle="-|>", lw=0.8, color=INK, shrinkA=0, shrinkB=0,
+                                mutation_scale=7))
 
 
-def exclusion(ax, x_arrow, y_mid, x_box, w, h, text):
-    ax.plot([x_arrow, x_box], [y_mid, y_mid], color=INK, lw=1.0)
-    box(ax, x_box, y_mid - h / 2, w, h, text, fs=7.3, ec="#777777")
+def exclusion(ax, x_arrow, y_mid, w, h, text):
+    """CONSORT: a horizontal line from the main arrow to the exclusion box on its right."""
+    x_box = x_arrow + 0.12
+    ax.plot([x_arrow, x_box], [y_mid, y_mid], color=INK, lw=0.8)
+    box(ax, x_box, y_mid - h / 2, w, h, text, fs=C.FS["box_small"], ec="#777777")
+
+
+def check_fit(fig, pad_pt=2.0):
+    """Stop if any text runs outside its box (the figure is drawn at print size)."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    pad = pad_pt * fig.dpi / 72
+    bad = []
+    for p, t in _BOXES:
+        bb, tb = p.get_window_extent(r), t.get_window_extent(r)
+        if tb.x0 < bb.x0 + pad or tb.x1 > bb.x1 - pad or tb.y0 < bb.y0 + pad or tb.y1 > bb.y1 - pad:
+            bad.append(t.get_text().replace("\n", " / "))
+    if bad:
+        raise AssertionError("text overflows its box:\n  " + "\n  ".join(bad))
 
 
 def main():
     print("=" * 72)
-    print("11_flowchart — Figure 1: participant flow")
+    print("11_flowchart - Figure 1: participant flow")
     print("=" * 72)
+    _BOXES.clear()
     pwh = E["n_pwh_2025"]; pwoh = E["n_pwoh_2025"]; pwoh_a = pwoh + BB_ANALYZED
     pal = C.PALETTE
     c_pwh, c_pwoh = pal["pwh_2025"], pal["pwoh_2025"]
     c_2021, c_ref = pal.get("pwh_2021", "#6A3D9A"), pal.get("jihs_2023", "#8C8C8C")
     f_pwh, f_pwoh, f_2021, f_ref = "#FBE9DD", "#E3EEF7", "#EFE6F5", "#F2F2F2"
 
-    # columns left -> right: 2021 (purple) | PWoH (blue, two streams) | PWH 2025 (orange) | JIHS (grey)
-    W = 16.0
-    X_21, X_BB, X_OP, X_PWH, X_REF = 1.0, 24.0, 43.0, 66.0, 89.0
-    W_REF = 19.0
-    c21, cbb, cop, cpwh, cref = (X_21 + W / 2, X_BB + W / 2, X_OP + W / 2,
-                                 X_PWH + W / 2, X_REF + W_REF / 2)
-    c_hosp = (cop + cpwh) / 2          # hospital source sits above the PWoH/PWH fork
-    X_HOSP = c_hosp - W / 2
+    # Coordinates are inches at print size (C.FIG_W wide).
+    # Columns, left to right: 2021 (purple) | PWoH serum bank | PWoH outpatients |
+    # PWH 2025 (orange) | JIHS (grey). The exclusion boxes sit in their own row, right of
+    # each main arrow, where the neighbouring column has no box.
+    FW, FH = C.FIG_W, 4.3
+    W, W_REF = 1.18, 1.30
+    c21, cbb, cop, cpwh, cref = 0.65, 2.05, 3.35, 4.70, 6.05
+    c_hosp = (cop + cpwh) / 2
+    WE = {"2021": 1.00, "bb": 1.00, "hosp": 1.08, "ref": 0.95}
+    Y_SRC, H_SRC = 3.42, 0.82
+    Y_EXC, H_EXC = 3.00, 0.46
+    Y_FORK = 2.62
+    Y_GRP, H_GRP = 1.88, 0.56
+    Y_SUB, H_SUB = 1.06, 0.42
+    Y_SETB = 0.24
 
-    fig, ax = plt.subplots(figsize=(14.4, 6.6))
-    ax.set_xlim(0, 123); ax.set_ylim(26, 100); ax.axis("off")
-
-    Y_SRC, H_SRC = 88, 11
-    Y_GRP, H_GRP = 60, 11
-    Y_EXC = 80.5
-    WE, HE = 10.2, 7.8
+    fig = plt.figure(figsize=(FW, FH))
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, FW); ax.set_ylim(0, FH); ax.axis("off")
 
     # ---- sources
-    box(ax, X_21, Y_SRC, W, H_SRC,
-        f"PWH, previous study\n3 Jul 2020 – 28 Oct 2021\nstored sera\nn = {RAW_2021}",
-        fs=8, fc=f_2021, ec=c_2021)
-    box(ax, X_BB, Y_SRC, W, H_SRC,
-        f"IMSUT serum bank, 2025\nhealthy volunteers\n17–18 Nov 2025\nn = {BB_DISPENSED}", fs=8)
-    box(ax, X_HOSP, Y_SRC, W, H_SRC,
-        f"IMSUT Hospital\noutpatients, 2025\n28 Jul 2025 – 9 Jan 2026\nresidual sera, n = {RAW_2025}", fs=8)
-    box(ax, X_REF, Y_SRC, W_REF, H_SRC,
-        f"National serosurvey\n2023 (JIHS)\nall ages\nn = {JIHS_ALL}", fs=8, fc=f_ref, ec=c_ref)
+    box(ax, c21 - W / 2, Y_SRC, W, H_SRC,
+        f"PWH, previous study\nstored sera\n3 Jul 2020 – 28 Oct 2021\nn = {RAW_2021}",
+        fc=f_2021, ec=c_2021)
+    box(ax, cbb - W / 2, Y_SRC, W, H_SRC,
+        f"IMSUT serum bank, 2025\nhealthy volunteers\n17–18 Nov 2025\nn = {BB_DISPENSED}")
+    box(ax, c_hosp - W / 2, Y_SRC, W, H_SRC,
+        f"IMSUT Hospital\noutpatients, residual sera\n28 Jul 2025 – 9 Jan 2026\nn = {RAW_2025}")
+    box(ax, cref - W_REF / 2, Y_SRC, W_REF, H_SRC,
+        f"National serosurvey\n2023 (JIHS), all ages\nn = {JIHS_ALL}", fc=f_ref, ec=c_ref)
 
     # ---- main arrows + exclusions
-    y_fork = 74.0
-    for cx, excl in [(c21, f"No anti-PT IgG\nresult\nn = {RAW_2021 - E['n_pwh_2021']}"),
-                     (cbb, f"Not assayed\nn = {BB_DISPENSED - BB_ANALYZED}"),
-                     (cref, f"Aged <20 years\nn = {JIHS_ALL - JIHS_ADULT}")]:
+    for cx, k, excl in [(c21, "2021", f"No anti-PT IgG result\nn = {RAW_2021 - E['n_pwh_2021']}"),
+                        (cbb, "bb", f"Not assayed\nn = {BB_DISPENSED - BB_ANALYZED}"),
+                        (cref, "ref", f"Aged <20 years\nn = {JIHS_ALL - JIHS_ADULT}")]:
         arrow(ax, cx, Y_SRC, cx, Y_GRP + H_GRP)
-        exclusion(ax, cx, Y_EXC, cx + W / 2 + 1.5, WE, HE, excl)
+        exclusion(ax, cx, Y_EXC, WE[k], H_EXC, excl)
     # hospital stream forks into PWoH outpatients and PWH 2025
-    ax.plot([c_hosp, c_hosp], [Y_SRC, y_fork], color=INK, lw=1.0)
-    exclusion(ax, c_hosp, Y_EXC, c_hosp + W / 2 + 1.5, WE, HE,
-              f"Second specimen\nof the same person\nn = {DUP_2025}")
-    ax.plot([cop, cpwh], [y_fork, y_fork], color=INK, lw=1.0)
-    arrow(ax, cop, y_fork, cop, Y_GRP + H_GRP)
-    arrow(ax, cpwh, y_fork, cpwh, Y_GRP + H_GRP)
+    ax.plot([c_hosp, c_hosp], [Y_SRC, Y_FORK], color=INK, lw=0.8)
+    exclusion(ax, c_hosp, Y_EXC, WE["hosp"], H_EXC,
+              f"Second specimen of the\nsame person, n = {DUP_2025}")
+    ax.plot([cop, cpwh], [Y_FORK, Y_FORK], color=INK, lw=0.8)
+    arrow(ax, cop, Y_FORK, cop, Y_GRP + H_GRP)
+    arrow(ax, cpwh, Y_FORK, cpwh, Y_GRP + H_GRP)
 
     # ---- analysis groups
-    box(ax, X_21, Y_GRP, W, H_GRP, f"PWH 2021 with\nanti-PT IgG\nn = {E['n_pwh_2021']}",
-        fc=f_2021, ec=c_2021, fs=9, bold=True)
-    box(ax, X_BB, Y_GRP, W, H_GRP, f"PWoH serum-bank\nvolunteers\nn = {BB_ANALYZED}",
-        fc=f_pwoh, ec=c_pwoh, fs=9, bold=True)
-    box(ax, X_OP, Y_GRP, W, H_GRP, f"PWoH\noutpatients\nn = {pwoh}", fc=f_pwoh, ec=c_pwoh,
-        fs=9, bold=True)
-    box(ax, X_PWH, Y_GRP, W, H_GRP, f"PWH 2025\nn = {pwh}", fc=f_pwh, ec=c_pwh, fs=9, bold=True)
-    box(ax, X_REF, Y_GRP, W_REF, H_GRP,
-        f"General-population\ncomparator, ≥20 years\nn = {JIHS_ADULT}", fc=f_ref, ec=c_ref,
-        fs=9, bold=True)
+    fb = C.FS["box"] + 0.5
+    box(ax, c21 - W / 2, Y_GRP, W, H_GRP, f"PWH 2021 with\nanti-PT IgG\nn = {E['n_pwh_2021']}",
+        fc=f_2021, ec=c_2021, fs=fb, bold=True)
+    box(ax, cbb - W / 2, Y_GRP, W, H_GRP, f"PWoH serum-bank\nvolunteers\nn = {BB_ANALYZED}",
+        fc=f_pwoh, ec=c_pwoh, fs=fb, bold=True)
+    box(ax, cop - W / 2, Y_GRP, W, H_GRP, f"PWoH\noutpatients\nn = {pwoh}",
+        fc=f_pwoh, ec=c_pwoh, fs=fb, bold=True)
+    box(ax, cpwh - W / 2, Y_GRP, W, H_GRP, f"PWH 2025\nn = {pwh}",
+        fc=f_pwh, ec=c_pwh, fs=fb, bold=True)
+    box(ax, cref - W_REF / 2, Y_GRP, W_REF, H_GRP,
+        f"General population\n≥20 years\nn = {JIHS_ADULT}", fc=f_ref, ec=c_ref, fs=fb, bold=True)
 
     # ---- PWoH sets span the two blue streams
-    xa, wa = X_BB, (X_OP + W) - X_BB
-    box(ax, xa, 46, wa, 9, f"PWoH set A\noutpatients + serum bank, n = {pwoh_a}",
-        fc=f_pwoh, ec=c_pwoh, fs=8.5)
-    arrow(ax, cbb, Y_GRP, cbb, 55)
-    arrow(ax, cop, Y_GRP, cop, 55)
-    box(ax, xa, 32, wa, 9, f"PWoH set B\noutpatients with blood counts, n = {pwoh}",
-        fc=f_pwoh, ec=c_pwoh, fs=8.5)
-    arrow(ax, xa + wa / 2, 46, xa + wa / 2, 41)
-    ax.text(xa + wa / 2 + 1.2, 43.5, "outpatients only", fontsize=7.5, va="center",
-            ha="left", color="#555555")
+    xa, wa = cbb - W / 2, (cop + W / 2) - (cbb - W / 2)
+    box(ax, xa, Y_SUB, wa, H_SUB, f"PWoH set A\noutpatients + serum bank, n = {pwoh_a}",
+        fc=f_pwoh, ec=c_pwoh)
+    arrow(ax, cbb, Y_GRP, cbb, Y_SUB + H_SUB)
+    arrow(ax, cop, Y_GRP, cop, Y_SUB + H_SUB)
+    box(ax, xa, Y_SETB, wa, H_SUB, f"PWoH set B\noutpatients with blood counts, n = {pwoh}",
+        fc=f_pwoh, ec=c_pwoh)
+    arrow(ax, xa + wa / 2, Y_SUB, xa + wa / 2, Y_SETB + H_SUB)
+    ax.text(xa + wa / 2 + 0.06, (Y_SUB + Y_SETB + H_SUB) / 2, "outpatients only",
+            fontsize=C.FS["box_small"], va="center", ha="left", color="#555555")
 
     # ---- PWH subsets: one box, one n
-    box(ax, X_PWH, 46, W, 9, f"CD4/CD8 ratio, 2025\nn = {E['cd48_2025_n']}", fc=f_pwh, ec=c_pwh, fs=8.5)
-    box(ax, X_PWH, 32, W, 9, f"HIV disease history\nn = {E['hivhx_linked_n']}", fc=f_pwh, ec=c_pwh, fs=8.5)
-    arrow(ax, cpwh, Y_GRP, cpwh, 55)
-    arrow(ax, cpwh, 46, cpwh, 41)
+    box(ax, cpwh - W / 2, Y_SUB, W, H_SUB, f"CD4/CD8 ratio, 2025\nn = {E['cd48_2025_n']}",
+        fc=f_pwh, ec=c_pwh)
+    box(ax, cpwh - W / 2, Y_SETB, W, H_SUB, f"HIV disease history\nn = {E['hivhx_linked_n']}",
+        fc=f_pwh, ec=c_pwh)
+    arrow(ax, cpwh, Y_GRP, cpwh, Y_SUB + H_SUB)
+    arrow(ax, cpwh, Y_SUB, cpwh, Y_SETB + H_SUB)
 
     # ---- paired sera
-    box(ax, X_21, 46, W, 9, f"Paired sera\n2021 and 2025, n = {E['mcnemar_pairs']}",
-        fc=f_2021, ec=c_2021, fs=8.5)
-    arrow(ax, c21, Y_GRP, c21, 55)
+    box(ax, c21 - W / 2, Y_SUB, W, H_SUB, f"Paired sera 2021\nand 2025, n = {E['mcnemar_pairs']}",
+        fc=f_2021, ec=c_2021)
+    arrow(ax, c21, Y_GRP, c21, Y_SUB + H_SUB)
 
-    fig.tight_layout()
+    check_fit(fig)
     stem = C.save_fig(fig, "flow")
     plt.close(fig)
-    print(f"  -> figures/{stem}.pdf/.png")
+    print(f"  -> figures/{stem}.pdf/.png  ({FW} x {FH} in, all text inside its box)")
     return {"flow_numbers": {"raw_2025": RAW_2025, "dup_removed": DUP_2025, "pwh": pwh,
                              "pwoh_a": pwoh_a, "pwoh_b": pwoh, "bb": BB_ANALYZED,
                              "jihs_adult": JIHS_ADULT}}

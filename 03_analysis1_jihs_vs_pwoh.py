@@ -112,7 +112,7 @@ def main():
     print(strat.to_string(index=False))
 
     # --- Figure: A, by cut-off; B, by age group ---
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4))
+    fig, axes = plt.subplots(1, 2, figsize=(C.FIG_W, 2.9))
     ax = axes[0]
     cuts = [10, 50, 100]
     jp = [100 * j[c].sum() / n_j for c in ["ge10", "ge50", "ge100"]]
@@ -121,10 +121,10 @@ def main():
     ax.bar(x - w / 2, jp, w, label=f"General population, JIHS 2023 (n={n_j})", color=C.PALETTE["jihs_2023"])
     ax.bar(x + w / 2, pp, w, label=f"This study, PWoH 2025 (n={len(pwoh)})", color=C.PALETTE["pwoh_2025"])
     for xi, v in zip(x - w / 2, jp):
-        ax.text(xi, v + 1, f"{v:.1f}", ha="center", fontsize=9)
+        ax.text(xi, v + 1, f"{v:.1f}", ha="center", fontsize=C.FS["annot"])
     for xi, v in zip(x + w / 2, pp):
-        ax.text(xi, v + 1, f"{v:.1f}", ha="center", fontsize=9)
-    ax.set_xticks(x); ax.set_xticklabels([f"$\\geq${c}" for c in cuts])
+        ax.text(xi, v + 1, f"{v:.1f}", ha="center", fontsize=C.FS["annot"])
+    ax.set_xticks(x); ax.set_xticklabels([f"≥{c}" for c in cuts])
     ax.set_xlabel(f"Anti-PT IgG cutoff ({C.ASSAY_UNIT})")
     ax.set_ylabel("Seropositive (%)")
     ymax = max(max(jp), max(pp))
@@ -132,7 +132,7 @@ def main():
     for xi, a_, b_, cut in zip(x, jp, pp, cuts):
         F.sig_bar(ax, xi - w / 2, xi + w / 2, max(a_, b_) + ymax * 0.09, p=p_by_cut[cut])
     F.panel(ax, "A")
-    F.colour_legend(ax, fontsize=8)
+    F.colour_legend(ax, fontsize=C.FS["annot"])
     ax.spines[["top", "right"]].set_visible(False)
 
     ax = axes[1]
@@ -140,11 +140,11 @@ def main():
     ax.bar(x - w / 2, strat["JIHS_pct"], w, color=C.PALETTE["jihs_2023"], label="JIHS 2023")
     ax.bar(x + w / 2, strat["PWoH_pct"], w, color=C.PALETTE["pwoh_2025"],
            label=f"PWoH 2025 (n={len(pwoh)})")
-    ax.set_xticks(x); ax.set_xticklabels(strat["age_grp"], fontsize=9)
+    ax.set_xticks(x); ax.set_xticklabels(strat["age_grp"], fontsize=C.FS["tick"])
     ax.set_xlabel("Age group (years)")
-    ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
+    ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (%)")
     F.panel(ax, "B")
-    F.colour_legend(ax, fontsize=8)
+    F.colour_legend(ax, fontsize=C.FS["annot"])
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "jihs_vs_pwoh")

@@ -130,23 +130,23 @@ def main():
               f"OR {r['matched_OR']:.2f} ({r['lci']:.2f}-{r['uci']:.2f}) p={r['p']:.3f}")
 
     # --- Forest plot ---
-    fig, ax = plt.subplots(figsize=(7.6, 3.2))
+    fig, ax = plt.subplots(figsize=(C.FIG_W, 2.4))
     y = np.arange(len(a2))[::-1]
     ax.errorbar(a2["aOR"], y,
                 xerr=[a2["aOR"] - a2["LCI"], a2["UCI"] - a2["aOR"]],
-                fmt="o", color=C.PALETTE["ink"], ecolor=C.PALETTE["ink"], capsize=3, markersize=6, lw=1.4)
-    ax.axvline(1.0, color=C.PALETTE["ref_line"], ls="--", lw=1)
+                fmt="o", color=C.PALETTE["ink"], ecolor=C.PALETTE["ink"], capsize=2.5, markersize=4.5, lw=1.1)
+    ax.axvline(1.0, color=C.PALETTE["ref_line"], ls="--", lw=0.8)
     ax.set_yticks(y)
     # the figure shows /µL; the label in numbers/analysis2.csv keeps /uL
-    ax.set_yticklabels([c.replace("/uL", "/µL") for c in a2["Covariate"]], fontsize=9)
+    ax.set_yticklabels([c.replace("/uL", "/µL") for c in a2["Covariate"]], fontsize=C.FS["tick"])
     ax.set_xscale("log")
     ax.set_xticks([0.25, 0.5, 1, 2])
     ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    ax.set_xlabel(f"Adjusted odds ratio for anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (95% CI)")
+    ax.set_xlabel(f"Adjusted odds ratio for anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (95% CI)")
     ax.set_xlim(0.2, 2.6)
     for yi, r in zip(y, a2.itertuples()):
         ax.text(2.75, yi, f"{r.aOR:.2f} ({r.LCI:.2f}–{r.UCI:.2f})   P = {r.P:.3f}",
-                va="center", fontsize=8.5)
+                va="center", fontsize=C.FS["annot"])
     ax.set_title("")  # no in-figure title; N goes in the legend
     ax.spines[["top", "right", "left"]].set_visible(False)
     ax.tick_params(axis="y", length=0)

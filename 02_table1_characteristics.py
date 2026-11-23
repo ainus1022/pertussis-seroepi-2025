@@ -208,26 +208,26 @@ def main():
     print("\n[By age group, PWoH-B vs PWH (sensitivity)]")
     print(strat_b.to_string(index=False))
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    fig, ax = plt.subplots(figsize=(C.FIG_W_MID, 3.2))
     x = np.arange(len(strat)); w = 0.36
     ax.bar(x - w / 2, strat["PWoH_pct"], w, label=f"PWoH (n={len(A)})", color=C.PALETTE["pwoh_2025"])
     ax.bar(x + w / 2, strat["PWH_pct"], w, label=f"PWH (n={len(pwh)})", color=C.PALETTE["pwh_2025"])
     for xi, v in zip(x - w / 2, strat["PWoH_pct"]):
-        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=8.5)
+        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=C.FS["annot"])
     for xi, v in zip(x + w / 2, strat["PWH_pct"]):
-        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=8.5)
+        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=C.FS["annot"])
     ax.set_xticks(x)
     ax.set_xticklabels([f"{a}\n({b}/{c})" for a, b, c in
-                        zip(strat["age_grp"], strat["PWoH_N"], strat["PWH_N"])], fontsize=8.5)
+                        zip(strat["age_grp"], strat["PWoH_N"], strat["PWH_N"])], fontsize=C.FS["annot"])
     ax.set_xlabel("Age group (years) — (PWoH n / PWH n)")
-    ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
+    ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (%)")
     ax.set_title("")
     _ymax = max(strat["PWoH_pct"].max(), strat["PWH_pct"].max())
-    ax.set_ylim(0, _ymax * 1.30)
+    ax.set_ylim(0, _ymax * 1.34)
     for xi, a_, b_, pv in zip(x, strat["PWoH_pct"], strat["PWH_pct"], strat["P_fisher"]):
         if float(pv) < 0.05:
-            F.sig_bar(ax, xi - w / 2, xi + w / 2, max(a_, b_) + _ymax * 0.07, p=float(pv), fs=8)
-    F.colour_legend(ax, fontsize=9)
+            F.sig_bar(ax, xi - w / 2, xi + w / 2, max(a_, b_) + _ymax * 0.10, p=float(pv))
+    F.colour_legend(ax, fontsize=C.FS["annot"])
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "age_pwoh_vs_pwh")

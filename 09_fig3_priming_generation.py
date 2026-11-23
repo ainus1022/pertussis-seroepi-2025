@@ -29,9 +29,9 @@ import lib
 
 ORDER = ["wP", "transition", "aP"]
 LABEL = {
-    "wP": f"wP\n(born $\\leq${C.WP_BIRTH_YEAR_UNTIL})",
+    "wP": f"wP\n(born ≤{C.WP_BIRTH_YEAR_UNTIL})",
     "transition": f"Transition\n({C.WP_BIRTH_YEAR_UNTIL + 1}-{C.AP_BIRTH_YEAR_FROM - 1})",
-    "aP": f"aP\n(born $\\geq${C.AP_BIRTH_YEAR_FROM})",
+    "aP": f"aP\n(born ≥{C.AP_BIRTH_YEAR_FROM})",
 }
 
 
@@ -162,7 +162,7 @@ def main():
     print(band.to_string(index=False))
 
     # --- Figure ---
-    fig, axes = plt.subplots(1, 2, figsize=(11.2, 4.4),
+    fig, axes = plt.subplots(1, 2, figsize=(C.FIG_W, 2.9),
                              gridspec_kw={"width_ratios": [1.15, 1]})
     ax = axes[0]
     x = np.arange(len(ORDER))
@@ -171,15 +171,15 @@ def main():
     colors = [C.PALETTE["wp"], C.PALETTE["transition"], C.PALETTE["ap"]]
     ax.bar(x, vals, 0.58, color=colors)
     for xi, v, n in zip(x, vals, ns):
-        ax.text(xi, v + 1.4, f"{v:.1f}%\n(n={n})", ha="center", fontsize=9)
+        ax.text(xi, v + 1.4, f"{v:.1f}%\n(n={n})", ha="center", fontsize=C.FS["annot"])
     ax.set_xticks(x)
-    ax.set_xticklabels([LABEL[g] for g in ORDER], fontsize=9)
+    ax.set_xticklabels([LABEL[g] for g in ORDER], fontsize=C.FS["tick"])
     ax.set_xlabel("Priming pertussis vaccine generation (by birth year)")
-    ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
-    ax.set_ylim(0, 88)
-    F.sig_bar(ax, x[0], x[2], max(vals) + 9.0,
+    ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (%)")
+    ax.set_ylim(0, 96)
+    F.sig_bar(ax, x[0], x[2], max(vals) + 14.0,
               text=f"aP vs wP: aOR {or_ap:.2f} ({lci:.2f}–{uci:.2f}), "
-                   f"{F.p_label(r.pvalues['aP'])}", fs=8.5)
+                   f"{F.p_label(r.pvalues['aP'])}")
     F.panel(ax, "A")
     ax.spines[["top", "right"]].set_visible(False)
 
@@ -192,15 +192,15 @@ def main():
         v = [100 * s[s["generation"] == g]["pt_pos"].mean() for g in ORDER]
         ax.bar(np.arange(len(ORDER)) + (i - 0.5) * w, v, w, label=lab, color=col, alpha=(1.0 if coh == "main" else 0.45), hatch=(None if coh == "main" else "//"), edgecolor=col)
     ax.set_xticks(np.arange(len(ORDER)))
-    ax.set_xticklabels([g if g != "transition" else "Transition" for g in ORDER], fontsize=9)
+    ax.set_xticklabels([g if g != "transition" else "Transition" for g in ORDER], fontsize=C.FS["tick"])
     ax.set_xlabel("Priming generation")
-    ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
-    ax.set_ylim(0, 88)
-    ax.set_ylim(0, 100)
+    ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (%)")
+    ax.set_ylim(0, 118)
+    ax.set_yticks(range(0, 101, 20))
     ax.text(0.01, 0.99, f"Cohort effect: OR {or_co:.2f}, {F.p_label(r.pvalues['biobank'])}",
-            transform=ax.transAxes, ha="left", va="top", fontsize=8.5, color=F.INK)
+            transform=ax.transAxes, ha="left", va="top", fontsize=C.FS["annot"], color=F.INK)
     F.panel(ax, "B")
-    F.colour_legend(ax, fontsize=8, loc="upper right")
+    F.colour_legend(ax, fontsize=C.FS["annot"], loc="upper right", bbox_to_anchor=(1.0, 0.90))
     ax.spines[["top", "right"]].set_visible(False)
 
     fig.tight_layout()

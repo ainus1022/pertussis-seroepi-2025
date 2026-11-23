@@ -23,6 +23,9 @@ OUT = C.DIR_FIG / "poster"
 OUT.mkdir(exist_ok=True)
 P = C.PALETTE
 
+# Poster/talk figures keep their own (already printed) style: reset the print-size
+# defaults that config.py sets for the manuscript figures, then apply this style.
+plt.rcParams.update(matplotlib.rcParamsDefault)
 plt.rcParams.update({
     "font.family": "sans-serif",
     "font.sans-serif": ["Arial", "Liberation Sans", "DejaVu Sans"],

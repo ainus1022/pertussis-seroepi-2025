@@ -32,7 +32,21 @@ _mpl.rcParams.update({
     "mathtext.default": "regular",
     "pdf.fonttype": 42,
     "ps.fonttype": 42,
+    # print-size type scale: every figure is drawn at its final width (FIG_W*), so
+    # these sizes are the printed sizes (journals ask for >= 6-7 pt)
+    "font.size": 8,
+    "axes.labelsize": 8,
+    "xtick.labelsize": 7.5,
+    "ytick.labelsize": 7.5,
+    "legend.fontsize": 7,
+    "axes.linewidth": 0.8,
+    "xtick.major.width": 0.8, "ytick.major.width": 0.8,
+    "xtick.major.size": 3, "ytick.major.size": 3,
+    "lines.linewidth": 1.2,
 })
+FIG_W = 7.2       # double column, 183 mm
+FIG_W_MID = 5.5   # 1.5 column, 140 mm (single-panel bar charts)
+FS = {"label": 8, "tick": 7.5, "annot": 7, "panel": 9, "box": 7, "box_small": 6.5}
 
 # =============================================================================
 # 1. Paths

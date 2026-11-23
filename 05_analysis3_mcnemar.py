@@ -91,24 +91,24 @@ def main():
     print(ag.to_string(index=False))
 
     # --- Figure ---
-    fig, ax = plt.subplots(figsize=(6.8, 4.0))
+    fig, ax = plt.subplots(figsize=(C.FIG_W_MID, 3.2))
     x = np.arange(len(ag)); w = 0.36
     ax.bar(x - w / 2, ag["pos_2021_pct"], w, label="2021", color=C.PALETTE["pwh_2021"])
     ax.bar(x + w / 2, ag["pos_2025_pct"], w, label="2025", color=C.PALETTE["pwh_2025"])
     for xi, v in zip(x - w / 2, ag["pos_2021_pct"]):
-        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=8.5)
+        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=C.FS["annot"])
     for xi, v in zip(x + w / 2, ag["pos_2025_pct"]):
-        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=8.5)
+        ax.text(xi, v + 1.2, f"{v:.1f}", ha="center", fontsize=C.FS["annot"])
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{g}\n(n={n})" for g, n in zip(ag["age_grp"], ag["n"])], fontsize=9)
+    ax.set_xticklabels([f"{g}\n(n={n})" for g, n in zip(ag["age_grp"], ag["n"])], fontsize=C.FS["tick"])
     ax.set_xlabel("Age group in 2025 (years)")
-    ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
+    ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (%)")
     ax.set_title("")
     _ymax = max(ag["pos_2021_pct"].max(), ag["pos_2025_pct"].max())
-    ax.set_ylim(0, _ymax * 1.34)
+    ax.set_ylim(0, _ymax * 1.42)
     F.sig_bar(ax, x[0] - w / 2, x[-1] + w / 2, _ymax * 1.14,
-              text=f"Overall, McNemar {F.p_label(r.pvalue)} (n = {len(p)} pairs)", fs=8.5)
-    F.colour_legend(ax, fontsize=9, loc="upper right")
+              text=f"Overall, McNemar {F.p_label(r.pvalue)} (n = {len(p)} pairs)")
+    F.colour_legend(ax, fontsize=C.FS["annot"], loc="upper right", ncol=2)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "mcnemar_age")

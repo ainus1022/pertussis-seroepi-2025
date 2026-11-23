@@ -39,16 +39,16 @@ def gmc(v):
 def jitter_strip(ax, x, vals, color, width=0.17):
     rng = np.random.default_rng(20261113)
     v = np.asarray(vals, float); v = v[~np.isnan(v)]
-    ax.scatter(x + rng.uniform(-width, width, len(v)), v, s=7, alpha=0.30,
+    ax.scatter(x + rng.uniform(-width, width, len(v)), v, s=2.5, alpha=0.30,
                color=color, edgecolors="none", zorder=2)
 
 
 def gmc_marker(ax, x, vals, color):
     g, lo, hi, n = gmc(vals)
-    ax.errorbar([x], [g], yerr=[[g - lo], [hi - g]], fmt="o", ms=7, mfc="white",
-                mec=color, ecolor=color, elinewidth=1.6, capsize=4, zorder=5, mew=1.8)
+    ax.errorbar([x], [g], yerr=[[g - lo], [hi - g]], fmt="o", ms=4.5, mfc="white",
+                mec=color, ecolor=color, elinewidth=1.2, capsize=2.5, zorder=5, mew=1.3)
     # value to the right of the marker on a white chip, clear of the dots
-    ax.text(x + 0.21, g, f"{g:.1f}", ha="left", va="center", fontsize=9.5,
+    ax.text(x + 0.21, g, f"{g:.1f}", ha="left", va="center", fontsize=C.FS["annot"],
             color=color, fontweight="bold", zorder=6,
             bbox=dict(boxstyle="round,pad=0.18", fc="white", ec="none", alpha=0.9))
     return g, n
@@ -56,14 +56,14 @@ def gmc_marker(ax, x, vals, color):
 
 def refline(ax):
     for y, lab in ((10, "10"), (100, "100")):
-        ax.axhline(y, color=P["ref_line"], lw=0.9, ls="--", zorder=1)
+        ax.axhline(y, color=P["ref_line"], lw=0.7, ls="--", zorder=1)
         ax.text(ax.get_xlim()[1], y, f"  {lab}", va="center", ha="left",
-                fontsize=8, color=P["ref_line"])
+                fontsize=C.FS["box_small"], color=P["ref_line"])
 
 
 def sig_bar(ax, x0, x1, y, label):
-    ax.plot([x0, x0, x1, x1], [y, y * 1.08, y * 1.08, y], color=INK, lw=1.0)
-    ax.text((x0 + x1) / 2, y * 1.13, label, ha="center", va="bottom", fontsize=9, color=INK)
+    ax.plot([x0, x0, x1, x1], [y, y * 1.08, y * 1.08, y], color=INK, lw=0.8)
+    ax.text((x0 + x1) / 2, y * 1.13, label, ha="center", va="bottom", fontsize=C.FS["annot"], color=INK)
 
 
 def main():
@@ -76,7 +76,7 @@ def main():
 
     key = json.loads(C.KEY_NUMBERS.read_text())
 
-    fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.3))
+    fig, axes = plt.subplots(1, 3, figsize=(C.FIG_W, 2.9))
 
     # ---- A: PWoH vs PWH
     ax = axes[0]
@@ -87,7 +87,7 @@ def main():
     ax.set_xticks([0, 1]); ax.set_xticklabels([f"PWoH\n(n = {n0})", f"PWH\n(n = {n1})"])
     ax.set_ylabel("Anti-PT IgG (EU/mL)")
     ax.set_xlim(-0.6, 1.6)
-    ax.text(0.02, 0.97, "A", transform=ax.transAxes, fontsize=13, fontweight="bold", va="top")
+    F.panel(ax, "A")
 
     # ---- B: PWoH by priming generation
     ax = axes[1]
@@ -103,14 +103,14 @@ def main():
     ax.set_xticks(range(3)); ax.set_xticklabels(labs)
     ax.set_xlim(-0.6, 2.6)
     ax.set_ylabel("Anti-PT IgG (EU/mL)")
-    ax.text(0.02, 0.97, "B", transform=ax.transAxes, fontsize=13, fontweight="bold", va="top")
+    F.panel(ax, "B")
 
     # ---- C: PWH paired 2021 -> 2025
     ax = axes[2]
     pr = pwh[pwh["paired"] == 1][["pt_2021", "pt"]].astype(float).dropna()
     rng = np.random.default_rng(7)
     for _, r in pr.iterrows():
-        ax.plot([0, 1], [r["pt_2021"], r["pt"]], color="#B9C2CC", lw=0.4, alpha=0.5, zorder=1)
+        ax.plot([0, 1], [r["pt_2021"], r["pt"]], color="#B9C2CC", lw=0.3, alpha=0.5, zorder=1)
     jitter_strip(ax, 0, pr["pt_2021"], P["pwh_2021"], width=0.10)
     jitter_strip(ax, 1, pr["pt"], P["pwh_2025"], width=0.10)
     g21, n_pair = gmc_marker(ax, 0, pr["pt_2021"], P["pwh_2021"])
@@ -120,7 +120,7 @@ def main():
     ax.set_xlim(-0.5, 1.5)
     ax.set_ylabel("Anti-PT IgG (EU/mL)")
     ax.set_title("")  # no in-figure title
-    ax.text(0.02, 0.97, "C", transform=ax.transAxes, fontsize=13, fontweight="bold", va="top")
+    F.panel(ax, "C")
 
     for ax in axes:
         ax.set_yscale("log")

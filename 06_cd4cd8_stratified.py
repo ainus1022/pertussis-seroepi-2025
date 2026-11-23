@@ -90,15 +90,15 @@ def main():
           f"Yates p={p_chi2_cc:.3f}) / Mann-Whitney p={p_mwu:.3f}")
 
     # --- Figure ---
-    fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.0))
+    fig, axes = plt.subplots(1, 2, figsize=(C.FIG_W, 2.9))
     ax = axes[0]
     vals = [100 * lo["pt_pos"].mean(), 100 * hi["pt_pos"].mean()]
-    labs = [f"$\\leq${C.CD48_CUT}\n(n={len(lo)})", f">{C.CD48_CUT}\n(n={len(hi)})"]
+    labs = [f"≤{C.CD48_CUT}\n(n={len(lo)})", f">{C.CD48_CUT}\n(n={len(hi)})"]
     ax.bar(labs, vals, color=[C.PALETTE["pwh_2025"], C.PALETTE["pwh_2025"]], alpha=None, width=0.55)
     ax.patches[0].set_alpha(0.45)  # same population colour, lighter tint for the low stratum
     for i, v in enumerate(vals):
-        ax.text(i, v + 1.2, f"{v:.1f}%", ha="center", fontsize=10)
-    ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} in 2025 (%)")
+        ax.text(i, v + 1.2, f"{v:.1f}%", ha="center", fontsize=C.FS["annot"])
+    ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} in 2025 (%)")
     ax.set_xlabel("Baseline CD4/CD8 ratio (2021)")
     ax.set_ylim(0, 70)
     F.sig_bar(ax, 0, 1, max(vals) + 4.5, text=f"Fisher {F.p_label(p_fisher)}")
@@ -114,10 +114,11 @@ def main():
         med.set_color(C.PALETTE["ink"])
     rng = np.random.default_rng(0)
     for i, s in enumerate([lo["pt"], hi["pt"]], start=1):
-        ax.scatter(rng.normal(i, 0.055, len(s)), s, s=7, alpha=0.35, color=C.PALETTE["ink"], lw=0)
+        ax.scatter(rng.normal(i, 0.055, len(s)), s, s=3, alpha=0.35, color=C.PALETTE["ink"], lw=0)
     ax.set_yscale("log")
-    ax.axhline(C.CUT_POS, color=C.PALETTE["ref_line"], ls="--", lw=1)
-    ax.set_ylabel(f"Anti-PT IgG in 2025 ({C.ASSAY_UNIT}, log scale)")
+    F.log_ticks(ax)
+    ax.axhline(C.CUT_POS, color=C.PALETTE["ref_line"], ls="--", lw=0.8)
+    ax.set_ylabel(f"Anti-PT IgG in 2025 ({C.ASSAY_UNIT})")
     ax.set_xlabel("Baseline CD4/CD8 ratio (2021)")
     _top = float(max(lo["pt"].max(), hi["pt"].max()))
     F.sig_bar(ax, 1, 2, _top * 1.35, text=f"Mann-Whitney {F.p_label(p_mwu)}")
