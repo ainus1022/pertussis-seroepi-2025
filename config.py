@@ -22,6 +22,18 @@ import importlib.util
 import os
 from pathlib import Path
 
+# Figure typeface: Arial (Liberation Sans, metric-compatible, where Arial is absent).
+# PDFs embed TrueType (fonttype 42) so the text stays editable. config is imported
+# first by every script, so this applies to all figures.
+import matplotlib as _mpl
+_mpl.rcParams.update({
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Arial", "Liberation Sans", "DejaVu Sans"],
+    "mathtext.default": "regular",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+})
+
 # =============================================================================
 # 1. Paths
 # =============================================================================
@@ -108,11 +120,12 @@ ENV_FILE = DIR_NUM / "env.txt"
 FIGURES = {   # numbering follows the order of figures in the manuscript
     "flow":            "Fig1_participant_flow",    # participants and analysis sets
     "jihs_vs_pwoh":    "Fig2_jihs_vs_pwoh",        # general population 2023 vs PWoH 2025
-    "age_pwoh_vs_pwh": "Fig3_age_pwoh_vs_pwh",     # seropositivity by age, PWoH vs PWH
-    "forest":          "Fig4_forest",              # multivariable model
-    "mcnemar_age":     "Fig5_mcnemar_age",         # PWH, paired 2021 vs 2025
-    "cd48":            "Fig6_cd4cd8",              # PWH by baseline CD4/CD8 ratio
-    "priming":         "Fig7_priming_generation",  # PWoH by priming-vaccine generation
+    "priming":         "Fig3_priming_generation",  # PWoH by priming-vaccine generation
+    "age_pwoh_vs_pwh": "Fig4_age_pwoh_vs_pwh",     # seropositivity by age, PWoH vs PWH
+    "forest":          "Fig5_forest",              # multivariable model
+    "mcnemar_age":     "Fig6_mcnemar_age",         # PWH, paired 2021 vs 2025
+    "cd48":            "Fig7_cd4cd8",              # PWH by baseline CD4/CD8 ratio
+    "titre":           "Fig8_titre",               # anti-PT IgG titres (13_titre_figures.py)
 }
 
 
@@ -325,6 +338,27 @@ EXPECTED = {
     "primthr_pwh_ap_ge100_n": 1,     "primthr_pwh_ap_ge100_pct": 0.9,
     "primthr_pwh_ge50_fisher_p": 0.2140,
     "primthr_pwh_ge100_fisher_p": 0.4627,
+    # --- anti-PT IgG thresholds by age group (14_agestrat_thresholds.py; >= 10 for PWoH is
+    #     checked against analysis1_agestrat.csv inside 14, so only >= 50 / >= 100 here)
+    "agethr_pwoh_20s_ge50_n": 4, "agethr_pwoh_20s_ge50_pct": 12.5, "agethr_pwoh_20s_ge100_n": 0, "agethr_pwoh_20s_ge100_pct": 0.0,
+    "agethr_pwoh_30s_ge50_n": 9, "agethr_pwoh_30s_ge50_pct": 13.0, "agethr_pwoh_30s_ge100_n": 0, "agethr_pwoh_30s_ge100_pct": 0.0,
+    "agethr_pwoh_40s_ge50_n": 9, "agethr_pwoh_40s_ge50_pct": 13.4, "agethr_pwoh_40s_ge100_n": 2, "agethr_pwoh_40s_ge100_pct": 3.0,
+    "agethr_pwoh_50s_ge50_n": 14, "agethr_pwoh_50s_ge50_pct": 14.9, "agethr_pwoh_50s_ge100_n": 4, "agethr_pwoh_50s_ge100_pct": 4.3,
+    "agethr_pwoh_60s_ge50_n": 9, "agethr_pwoh_60s_ge50_pct": 12.0, "agethr_pwoh_60s_ge100_n": 5, "agethr_pwoh_60s_ge100_pct": 6.7,
+    "agethr_pwoh_70p_ge50_n": 14, "agethr_pwoh_70p_ge50_pct": 12.4, "agethr_pwoh_70p_ge100_n": 3, "agethr_pwoh_70p_ge100_pct": 2.7,
+    "agethr_pwh_20s_ge50_n": 0, "agethr_pwh_20s_ge50_pct": 0.0, "agethr_pwh_20s_ge100_n": 0, "agethr_pwh_20s_ge100_pct": 0.0,
+    "agethr_pwh_30s_ge50_n": 3, "agethr_pwh_30s_ge50_pct": 5.9, "agethr_pwh_30s_ge100_n": 1, "agethr_pwh_30s_ge100_pct": 2.0,
+    "agethr_pwh_40s_ge50_n": 8, "agethr_pwh_40s_ge50_pct": 6.3, "agethr_pwh_40s_ge100_n": 3, "agethr_pwh_40s_ge100_pct": 2.4,
+    "agethr_pwh_50s_ge50_n": 19, "agethr_pwh_50s_ge50_pct": 9.5, "agethr_pwh_50s_ge100_n": 8, "agethr_pwh_50s_ge100_pct": 4.0,
+    "agethr_pwh_60s_ge50_n": 7, "agethr_pwh_60s_ge50_pct": 7.0, "agethr_pwh_60s_ge100_n": 1, "agethr_pwh_60s_ge100_pct": 1.0,
+    "agethr_pwh_70p_ge50_n": 3, "agethr_pwh_70p_ge50_pct": 8.3, "agethr_pwh_70p_ge100_n": 0, "agethr_pwh_70p_ge100_pct": 0.0,
+    # --- Figure 8, titres (13_titre_figures.py)
+    "titre_pwh_gmc": 10.5,            # PWH 2025 (pairs with pwoh_a_gmc)
+    "titre_gen_wp_gmc": 16.8, "titre_gen_trans_gmc": 16.3, "titre_gen_ap_gmc": 12.5,
+    "titre_pair_2021_gmc": 9.3, "titre_pair_2025_gmc": 10.9,   # PWH paired sera (the 463 mcnemar_pairs)
+    "titre_mwu_p_pwoh_pwh": 0.0,      # Mann-Whitney (5.3e-10; checked within TOL_STAT)
+    "titre_mwu_p_wp_ap": 0.0038,      # Mann-Whitney, PWoH set A, wP vs aP
+    "titre_wilcoxon_p_pair": 0.0009,  # Wilcoxon signed-rank, PWH 2021 vs 2025
 }
 
 # Tolerances: counts must match exactly; rounding differences are allowed elsewhere.
@@ -528,8 +562,10 @@ PWOH_SET_BY_ANALYSIS = {
     "06_cd4cd8_stratified":       "none",     # PWH only
     "07_table2_international":    "A",
     "08_biobank_descriptive":     "biobank",
-    "09_fig6_priming_generation": "A",
+    "09_fig3_priming_generation": "A",
     "12_priming_thresholds":      "A",
+    "13_titre_figures":           "A",
+    "14_agestrat_thresholds":     "A",
 }
 
 # Variables that cannot be reported for set A (structurally missing in the serum bank).

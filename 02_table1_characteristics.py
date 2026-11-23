@@ -3,7 +3,7 @@
 
 Input : output/analysis_master.csv, output/frozen_biobank.csv   (private)
 Output: numbers/table1.csv, numbers/table1_agestrat.csv,
-        numbers/table1_agestrat_setB.csv, figures/Fig1_*
+        numbers/table1_agestrat_setB.csv, figures/Fig4_*
 
 PWoH is shown as two sets (config section 10):
   A = hospital outpatients (301) + serum bank (149) = 450   main comparison
@@ -22,6 +22,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import config as C
+import figlib as F
 import lib
 
 CALLER = "02_table1_characteristics"
@@ -220,8 +221,13 @@ def main():
                         zip(strat["age_grp"], strat["PWoH_N"], strat["PWH_N"])], fontsize=8.5)
     ax.set_xlabel("Age group (years) — (PWoH n / PWH n)")
     ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
-    ax.set_title("Seropositivity by age group, PWoH vs PWH (2025)", fontsize=10, loc="left")
-    ax.legend(frameon=False, fontsize=9)
+    ax.set_title("")
+    _ymax = max(strat["PWoH_pct"].max(), strat["PWH_pct"].max())
+    ax.set_ylim(0, _ymax * 1.30)
+    for xi, a_, b_, pv in zip(x, strat["PWoH_pct"], strat["PWH_pct"], strat["P_fisher"]):
+        if float(pv) < 0.05:
+            F.sig_bar(ax, xi - w / 2, xi + w / 2, max(a_, b_) + _ymax * 0.07, p=float(pv), fs=8)
+    F.colour_legend(ax, fontsize=9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "age_pwoh_vs_pwh")

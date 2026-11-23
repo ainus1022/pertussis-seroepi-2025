@@ -5,7 +5,7 @@ Strata: ratio <= 0.5 versus > 0.5 (a ratio of exactly 0.5 is in the low stratum)
 CD8 counts were not measured in 2025, so the ratio is the 2021 baseline value.
 
 Input : output/analysis_master.csv   (private)
-Output: numbers/cd4cd8.csv, figures/Fig5_*
+Output: numbers/cd4cd8.csv, figures/Fig7_*
 """
 import sys
 import numpy as np
@@ -16,6 +16,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import config as C
+import figlib as F
 
 
 def gmc(s):
@@ -100,7 +101,8 @@ def main():
     ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} in 2025 (%)")
     ax.set_xlabel("Baseline CD4/CD8 ratio (2021)")
     ax.set_ylim(0, 70)
-    ax.set_title(f"A. Seropositivity (Fisher p={p_fisher:.3f})", fontsize=10, loc="left")
+    F.sig_bar(ax, 0, 1, max(vals) + 4.5, text=f"Fisher {F.p_label(p_fisher)}")
+    F.panel(ax, "A")
     ax.spines[["top", "right"]].set_visible(False)
 
     ax = axes[1]
@@ -117,7 +119,9 @@ def main():
     ax.axhline(C.CUT_POS, color=C.PALETTE["ref_line"], ls="--", lw=1)
     ax.set_ylabel(f"Anti-PT IgG in 2025 ({C.ASSAY_UNIT}, log scale)")
     ax.set_xlabel("Baseline CD4/CD8 ratio (2021)")
-    ax.set_title(f"B. Titre distribution (Mann-Whitney p={p_mwu:.3f})", fontsize=10, loc="left")
+    _top = float(max(lo["pt"].max(), hi["pt"].max()))
+    F.sig_bar(ax, 1, 2, _top * 1.35, text=f"Mann-Whitney {F.p_label(p_mwu)}")
+    F.panel(ax, "B")
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "cd48")

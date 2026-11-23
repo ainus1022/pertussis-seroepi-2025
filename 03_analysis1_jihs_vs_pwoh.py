@@ -3,7 +3,7 @@
 
 Input : data/jihs2023_pt_from_pdf.csv (public), output/analysis_master.csv,
         output/frozen_biobank.csv (private)
-Output: numbers/analysis1.csv, numbers/analysis1_agestrat.csv, figures/Fig3_*
+Output: numbers/analysis1.csv, numbers/analysis1_agestrat.csv, figures/Fig2_*
 
 The JIHS survey provides age-specific counts by titre bin, not individual
 values, so the usable cut-offs are 10, 50 and 100.
@@ -21,6 +21,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import config as C
+import figlib as F
 import lib
 
 CALLER = "03_analysis1_jihs_vs_pwoh"
@@ -70,10 +71,12 @@ def main():
 
     rows = []
     chi2_by_cut = {}
+    p_by_cut = {}
     for cut, jcol in [(10, "ge10"), (50, "ge50"), (100, "ge100")]:
         kj = int(j[jcol].sum())
         kp = int((pwoh["pt"] >= cut).sum())
         chi2, p_chi, p_fis = two_prop(kp, len(pwoh), kj, n_j)
+        p_by_cut[cut] = p_chi
         chi2_by_cut[cut] = round(chi2, 3)
         rows.append({
             "Cutoff (EU/mL)": f">={cut}",
@@ -124,8 +127,12 @@ def main():
     ax.set_xticks(x); ax.set_xticklabels([f"$\\geq${c}" for c in cuts])
     ax.set_xlabel(f"Anti-PT IgG cutoff ({C.ASSAY_UNIT})")
     ax.set_ylabel("Seropositive (%)")
-    ax.set_title("A. Seropositivity by cutoff")
-    ax.legend(fontsize=8, frameon=False)
+    ymax = max(max(jp), max(pp))
+    ax.set_ylim(0, ymax * 1.40)
+    for xi, a_, b_, cut in zip(x, jp, pp, cuts):
+        F.sig_bar(ax, xi - w / 2, xi + w / 2, max(a_, b_) + ymax * 0.09, p=p_by_cut[cut])
+    F.panel(ax, "A")
+    F.colour_legend(ax, fontsize=8)
     ax.spines[["top", "right"]].set_visible(False)
 
     ax = axes[1]
@@ -136,8 +143,8 @@ def main():
     ax.set_xticks(x); ax.set_xticklabels(strat["age_grp"], fontsize=9)
     ax.set_xlabel("Age group (years)")
     ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
-    ax.set_title("B. By age group")
-    ax.legend(fontsize=8, frameon=False)
+    F.panel(ax, "B")
+    F.colour_legend(ax, fontsize=8)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "jihs_vs_pwoh")

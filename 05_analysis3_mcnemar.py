@@ -2,7 +2,7 @@
 05_analysis3_mcnemar.py - Analysis 3: PWH, paired sera 2021 -> 2025 (McNemar).
 
 Input : output/analysis_master.csv   (private; pairs linked by study ID + date of birth)
-Output: numbers/mcnemar_paired.csv, numbers/mcnemar_agegroup.csv, figures/Fig4_*
+Output: numbers/mcnemar_paired.csv, numbers/mcnemar_agegroup.csv, figures/Fig6_*
 """
 import sys
 import numpy as np
@@ -13,6 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import config as C
+import figlib as F
 
 AGE_BINS = [0, 40, 50, 60, 200]
 AGE_LABELS = ["<40", "40-49", "50-59", "60+"]
@@ -102,9 +103,12 @@ def main():
     ax.set_xticklabels([f"{g}\n(n={n})" for g, n in zip(ag["age_grp"], ag["n"])], fontsize=9)
     ax.set_xlabel("Age group in 2025 (years)")
     ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
-    ax.set_title(f"Paired anti-PT IgG seropositivity in PWH, 2021 vs 2025 "
-                 f"(n={len(p)} pairs; McNemar p={r.pvalue:.3f})", fontsize=9.5, loc="left")
-    ax.legend(frameon=False, fontsize=9)
+    ax.set_title("")
+    _ymax = max(ag["pos_2021_pct"].max(), ag["pos_2025_pct"].max())
+    ax.set_ylim(0, _ymax * 1.34)
+    F.sig_bar(ax, x[0] - w / 2, x[-1] + w / 2, _ymax * 1.14,
+              text=f"Overall, McNemar {F.p_label(r.pvalue)} (n = {len(p)} pairs)", fs=8.5)
+    F.colour_legend(ax, fontsize=9, loc="upper right")
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     stem = C.save_fig(fig, "mcnemar_age")

@@ -1,5 +1,5 @@
 """
-09_fig6_priming_generation.py - PWoH: seropositivity by priming-vaccine generation.
+09_fig3_priming_generation.py - PWoH: seropositivity by priming-vaccine generation.
 
 Analysis set: PWoH set A = hospital outpatients (301) + serum bank (149) = 450.
 The outpatients alone are older and contain few adults primed with acellular
@@ -12,7 +12,7 @@ Sensitivity 2 : lower bound of the transition band varied.
 
 Input : output/analysis_master.csv, output/frozen_biobank.csv   (private)
 Output: numbers/priming_generation.csv, numbers/priming_sensitivity.csv,
-        numbers/priming_transition_band.csv, figures/Fig6_*
+        numbers/priming_transition_band.csv, figures/Fig3_*
 """
 import sys
 import numpy as np
@@ -24,6 +24,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import config as C
+import figlib as F
 import lib
 
 ORDER = ["wP", "transition", "aP"]
@@ -40,10 +41,10 @@ def gm(s):
 
 def main():
     print("=" * 72)
-    print("09_fig6_priming_generation - priming-vaccine generation (PWoH)")
+    print("09_fig3_priming_generation - priming-vaccine generation (PWoH)")
     print("=" * 72)
 
-    p = lib.load_pooled_pwoh("09_fig6_priming_generation")
+    p = lib.load_pooled_pwoh("09_fig3_priming_generation")
     C.check("priming_pooled_n", len(p), label="PWoH set A n")
     # Input for the Stata check (the analysis file does not contain the serum bank).
     p.to_csv(C.POOLED_PWOH, index=False)
@@ -176,9 +177,10 @@ def main():
     ax.set_xlabel("Priming pertussis vaccine generation (by birth year)")
     ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
     ax.set_ylim(0, 88)
-    ax.set_title(f"A. Seropositivity by priming generation\n"
-                 f"aP vs wP: aOR {or_ap:.2f} ({lci:.2f}-{uci:.2f}), p={r.pvalues['aP']:.3f} "
-                 f"(N={len(sub)}, adjusted for cohort)", fontsize=9, loc="left")
+    F.sig_bar(ax, x[0], x[2], max(vals) + 9.0,
+              text=f"aP vs wP: aOR {or_ap:.2f} ({lci:.2f}–{uci:.2f}), "
+                   f"{F.p_label(r.pvalues['aP'])}", fs=8.5)
+    F.panel(ax, "A")
     ax.spines[["top", "right"]].set_visible(False)
 
     # B: same direction in each source cohort (supports pooling)
@@ -194,9 +196,11 @@ def main():
     ax.set_xlabel("Priming generation")
     ax.set_ylabel(f"Anti-PT IgG $\\geq${C.CUT_POS} {C.ASSAY_UNIT} (%)")
     ax.set_ylim(0, 88)
-    ax.set_title(f"B. By source cohort\n(cohort effect OR {or_co:.2f}, p={r.pvalues['biobank']:.2f} "
-                 f"— supports pooling)", fontsize=9, loc="left")
-    ax.legend(frameon=False, fontsize=8)
+    ax.set_ylim(0, 100)
+    ax.text(0.01, 0.99, f"Cohort effect: OR {or_co:.2f}, {F.p_label(r.pvalues['biobank'])}",
+            transform=ax.transAxes, ha="left", va="top", fontsize=8.5, color=F.INK)
+    F.panel(ax, "B")
+    F.colour_legend(ax, fontsize=8, loc="upper right")
     ax.spines[["top", "right"]].set_visible(False)
 
     fig.tight_layout()

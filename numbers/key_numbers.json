@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-04T07:21:06+00:00",
+  "generated_utc": "2026-11-23T00:44:14+00:00",
   "jihs_pdf_n": 903,
   "jihs_pdf_pos": 449,
   "jihs_pdf_high": 4,
@@ -251,6 +251,167 @@
       "ge100_P_fisher": 0.4627
     }
   ],
+  "titre": {
+    "gmc_pwoh_a": 15.45,
+    "gmc_pwh": 10.52,
+    "gmc_gen": {
+      "wP": 16.84,
+      "transition": 16.27,
+      "aP": 12.52
+    },
+    "gmc_pair_2021": 9.29,
+    "gmc_pair_2025": 10.88,
+    "n_pair": 463,
+    "p_mwu_pwoh_pwh": 5.317315100427146e-10,
+    "p_mwu_wp_ap": 0.003819548575828386,
+    "p_wilcoxon_pair": 0.0008550664920975966
+  },
+  "agestrat_thresholds": [
+    {
+      "population": "PWoH set A",
+      "age_grp": "20-29",
+      "N": 32,
+      "age_median": 25.0,
+      "ge10_n": 19,
+      "ge10_pct": 59.4,
+      "ge50_n": 4,
+      "ge50_pct": 12.5,
+      "ge100_n": 0,
+      "ge100_pct": 0.0
+    },
+    {
+      "population": "PWoH set A",
+      "age_grp": "30-39",
+      "N": 69,
+      "age_median": 35.0,
+      "ge10_n": 35,
+      "ge10_pct": 50.7,
+      "ge50_n": 9,
+      "ge50_pct": 13.0,
+      "ge100_n": 0,
+      "ge100_pct": 0.0
+    },
+    {
+      "population": "PWoH set A",
+      "age_grp": "40-49",
+      "N": 67,
+      "age_median": 44.0,
+      "ge10_n": 40,
+      "ge10_pct": 59.7,
+      "ge50_n": 9,
+      "ge50_pct": 13.4,
+      "ge100_n": 2,
+      "ge100_pct": 3.0
+    },
+    {
+      "population": "PWoH set A",
+      "age_grp": "50-59",
+      "N": 94,
+      "age_median": 53.5,
+      "ge10_n": 68,
+      "ge10_pct": 72.3,
+      "ge50_n": 14,
+      "ge50_pct": 14.9,
+      "ge100_n": 4,
+      "ge100_pct": 4.3
+    },
+    {
+      "population": "PWoH set A",
+      "age_grp": "60-69",
+      "N": 75,
+      "age_median": 63.0,
+      "ge10_n": 57,
+      "ge10_pct": 76.0,
+      "ge50_n": 9,
+      "ge50_pct": 12.0,
+      "ge100_n": 5,
+      "ge100_pct": 6.7
+    },
+    {
+      "population": "PWoH set A",
+      "age_grp": "70+",
+      "N": 113,
+      "age_median": 78.0,
+      "ge10_n": 69,
+      "ge10_pct": 61.1,
+      "ge50_n": 14,
+      "ge50_pct": 12.4,
+      "ge100_n": 3,
+      "ge100_pct": 2.7
+    },
+    {
+      "population": "PWH",
+      "age_grp": "20-29",
+      "N": 16,
+      "age_median": 26.5,
+      "ge10_n": 8,
+      "ge10_pct": 50.0,
+      "ge50_n": 0,
+      "ge50_pct": 0.0,
+      "ge100_n": 0,
+      "ge100_pct": 0.0
+    },
+    {
+      "population": "PWH",
+      "age_grp": "30-39",
+      "N": 51,
+      "age_median": 37.0,
+      "ge10_n": 19,
+      "ge10_pct": 37.3,
+      "ge50_n": 3,
+      "ge50_pct": 5.9,
+      "ge100_n": 1,
+      "ge100_pct": 2.0
+    },
+    {
+      "population": "PWH",
+      "age_grp": "40-49",
+      "N": 126,
+      "age_median": 46.0,
+      "ge10_n": 65,
+      "ge10_pct": 51.6,
+      "ge50_n": 8,
+      "ge50_pct": 6.3,
+      "ge100_n": 3,
+      "ge100_pct": 2.4
+    },
+    {
+      "population": "PWH",
+      "age_grp": "50-59",
+      "N": 199,
+      "age_median": 55.0,
+      "ge10_n": 104,
+      "ge10_pct": 52.3,
+      "ge50_n": 19,
+      "ge50_pct": 9.5,
+      "ge100_n": 8,
+      "ge100_pct": 4.0
+    },
+    {
+      "population": "PWH",
+      "age_grp": "60-69",
+      "N": 100,
+      "age_median": 64.0,
+      "ge10_n": 49,
+      "ge10_pct": 49.0,
+      "ge50_n": 7,
+      "ge50_pct": 7.0,
+      "ge100_n": 1,
+      "ge100_pct": 1.0
+    },
+    {
+      "population": "PWH",
+      "age_grp": "70+",
+      "N": 36,
+      "age_median": 74.0,
+      "ge10_n": 19,
+      "ge10_pct": 52.8,
+      "ge50_n": 3,
+      "ge50_pct": 8.3,
+      "ge100_n": 0,
+      "ge100_pct": 0.0
+    }
+  ],
   "biobank_n": 149,
   "biobank_pos_pct": 62.4,
   "biobank_gmc": 14.7,
@@ -271,11 +432,12 @@
   "figure_names": {
     "flow": "Fig1_participant_flow",
     "jihs_vs_pwoh": "Fig2_jihs_vs_pwoh",
-    "age_pwoh_vs_pwh": "Fig3_age_pwoh_vs_pwh",
-    "forest": "Fig4_forest",
-    "mcnemar_age": "Fig5_mcnemar_age",
-    "cd48": "Fig6_cd4cd8",
-    "priming": "Fig7_priming_generation"
+    "priming": "Fig3_priming_generation",
+    "age_pwoh_vs_pwh": "Fig4_age_pwoh_vs_pwh",
+    "forest": "Fig5_forest",
+    "mcnemar_age": "Fig6_mcnemar_age",
+    "cd48": "Fig7_cd4cd8",
+    "titre": "Fig8_titre"
   },
   "match_algorithm": "1:1 nearest-neighbour matching on age within a ±3-year caliper, without replacement; PWH processed in ascending order of age (ties broken by participant ID); restricted to the Analysis-2 complete-case set; conditional odds ratio from discordant pairs (exact binomial test)."
 }
