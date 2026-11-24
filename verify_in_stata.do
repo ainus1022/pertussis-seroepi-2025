@@ -244,6 +244,72 @@ foreach pop in "PWoH" "PWH" {
 }
 restore
 
+*------------------------------------------------------------------------------
+* 8. Figure 8, titres (13_titre_figures.py)
+*    Expected (config.EXPECTED / Python):
+*      A: PWoH set A (450) vs PWH (528)        Mann-Whitney p=5.3e-10
+*      B: PWoH set A, wP (273) vs aP (125)      Mann-Whitney p=0.0038
+*      C: PWH paired sera, 463 pairs, 2021 vs 2025  Wilcoxon signed-rank p=0.0009
+*    scipy's mannwhitneyu uses the normal approximation with continuity correction;
+*    Stata's ranksum does not. scipy's wilcoxon drops zero differences; Stata's
+*    signrank keeps them and adjusts the variance. P values can therefore differ in
+*    the third or fourth decimal place (C: Stata 0.0010).
+*------------------------------------------------------------------------------
+di as txt "{hline 78}"
+di as res "8. Figure 8, titres (13_titre_figures.py)"
+di as txt "{hline 78}"
+preserve
+import delimited "`priv'/output/analysis_master.csv", clear varnames(1) case(preserve)
+keep if hiv == 1
+keep pt pt_2021 paired
+gen byte grp = 1
+tempfile pwh
+save `pwh'
+import delimited "`priv'/output/pooled_pwoh.csv", clear varnames(1) case(preserve)
+keep pt generation
+di as txt "--- 8B: wP vs aP (PWoH set A)"
+ranksum pt if inlist(generation, "wP", "aP"), by(generation)
+gen byte grp = 0
+append using `pwh'
+di as txt "--- 8A: PWoH set A vs PWH"
+tab grp
+ranksum pt, by(grp)
+di as txt "--- 8C: PWH 2021 vs 2025 (paired)"
+count if grp == 1 & paired == 1 & !missing(pt_2021, pt)
+signrank pt_2021 = pt if grp == 1 & paired == 1
+restore
+
+*------------------------------------------------------------------------------
+* 9. Anti-PT IgG thresholds by age group (14_agestrat_thresholds.py)
+*    Descriptive only; counts must equal numbers/agestrat_thresholds.csv.
+*    e.g. PWoH 50-59 >=50 14/94; PWH 50-59 >=50 19/199; PWoH 60-69 >=100 5/75
+*------------------------------------------------------------------------------
+di as txt "{hline 78}"
+di as res "9. Thresholds by age group (14_agestrat_thresholds.py)"
+di as txt "{hline 78}"
+preserve
+import delimited "`priv'/output/analysis_master.csv", clear varnames(1) case(preserve)
+keep if hiv == 1
+keep pt age
+gen str4 population = "PWH"
+tempfile pwh
+save `pwh'
+import delimited "`priv'/output/pooled_pwoh.csv", clear varnames(1) case(preserve)
+keep pt age
+gen str4 population = "PWoH"
+append using `pwh'
+egen byte agegrp = cut(age), at(20 30 40 50 60 70 200)
+label define agegrp 20 "20-29" 30 "30-39" 40 "40-49" 50 "50-59" 60 "60-69" 70 "70+"
+label values agegrp agegrp
+gen byte ge50  = (pt >= 50)
+gen byte ge100 = (pt >= 100)
+foreach pop in "PWoH" "PWH" {
+    di as txt "=== `pop' ==="
+    tab agegrp ge50  if population == "`pop'", row
+    tab agegrp ge100 if population == "`pop'", row
+}
+restore
+
 di as txt "{hline 78}"
 di as res "Done. Compare with numbers/*.csv."
 di as txt "{hline 78}"
