@@ -176,7 +176,9 @@ def main():
     ax.set_xticklabels([LABEL[g] for g in ORDER], fontsize=C.FS["tick"])
     ax.set_xlabel("Priming pertussis vaccine generation (by birth year)")
     ax.set_ylabel(f"Anti-PT IgG ≥{C.CUT_POS} {C.ASSAY_UNIT} (%)")
-    ax.set_ylim(0, 96)
+    # same measure as panel B, so the same axis (limit and ticks)
+    ax.set_ylim(0, 118)
+    ax.set_yticks(range(0, 101, 20))
     F.sig_bar(ax, x[0], x[2], max(vals) + 14.0,
               text=f"aP vs wP: aOR {or_ap:.2f} ({lci:.2f}–{uci:.2f}), "
                    f"{F.p_label(r.pvalues['aP'])}")
