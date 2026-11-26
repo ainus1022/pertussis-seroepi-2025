@@ -1,15 +1,17 @@
 """
 13_titre_figures.py - Figure 8: anti-PT IgG titres
 
-Shows the titres themselves alongside the seropositivity analyses. The reading:
-exposure occurred, but titres did not rise fully (mostly subclinical infection),
-and some people with HIV did not mount a rise.
-Panels:
-  A: PWoH set A vs PWH, individual titres (log scale) with GMC and 95% CI
+Shows the titres themselves alongside the seropositivity analyses.
+Panels (2 x 2; top = cross-sectional, bottom = the same people over time):
+  A: PWoH set A vs PWH, individual titres (log scale), box plot, GMC and 95% CI
   B: PWoH by priming-vaccine generation (wP / transition / aP)
-  C: PWH paired sera, 2021 -> 2025
+  C: PWH paired sera (463), 2021 and 2025 distributions - the group barely moves
+  D: the same 463 people, individual trajectories - individuals move up and down
+     (numbers crossing 10 EU/mL in each direction; McNemar P)
+Box plots rather than violins: kernel density would smooth the 160 EU/mL ceiling
+and the discrete assay values into tails that are not in the data.
 Tests on titres: Mann-Whitney U (A, B: wP vs aP) and Wilcoxon signed-rank (C).
-Every GMC and P value drawn is checked against config.EXPECTED.
+Every GMC, P value and count drawn is checked against config.EXPECTED.
 Output: figures/Fig8_titre.pdf / .png
 """
 import json
@@ -26,6 +28,8 @@ from matplotlib.ticker import FuncFormatter, NullFormatter
 P = C.PALETTE
 INK = P["ink"]
 CEIL = 160.0
+E_MCN = {"neg_to_pos": C.EXPECTED["mcnemar_disc_neg_to_pos"],
+         "pos_to_neg": C.EXPECTED["mcnemar_disc_pos_to_neg"]}
 
 
 def gmc(v):
@@ -41,6 +45,20 @@ def jitter_strip(ax, x, vals, color, width=0.17):
     v = np.asarray(vals, float); v = v[~np.isnan(v)]
     ax.scatter(x + rng.uniform(-width, width, len(v)), v, s=2.5, alpha=0.30,
                color=color, edgecolors="none", zorder=2)
+
+
+def box_overlay(ax, x, vals, color, w=0.46):
+    """Box plot without outlier markers (the individual points are drawn)."""
+    v = np.asarray(vals, float); v = v[~np.isnan(v)]
+    bp = ax.boxplot([v], positions=[x], widths=w, showfliers=False,
+                    patch_artist=True, zorder=3, manage_ticks=False)
+    for b in bp["boxes"]:
+        b.set(facecolor=color, alpha=0.26, edgecolor=color, linewidth=1.0)
+    for k in ("whiskers", "caps"):
+        for b in bp[k]:
+            b.set(color=color, linewidth=1.0)
+    for b in bp["medians"]:
+        b.set(color=INK, linewidth=1.4)
 
 
 def gmc_marker(ax, x, vals, color):
@@ -67,7 +85,7 @@ def sig_bar(ax, x0, x1, y, label):
 
 
 def main():
-    print("=" * 72); print("13_titre_figures — Figure 8: titres"); print("=" * 72)
+    print("=" * 72); print("13_titre_figures - Figure 8: titres"); print("=" * 72)
     pwoh = lib.load_pooled_pwoh("13_titre_figures")   # via the PWoH-set guard
     assert len(pwoh) == C.EXPECTED["n_pooled_pwoh_2025"], len(pwoh)
     master = pd.read_csv(C.MASTER)
@@ -76,12 +94,16 @@ def main():
 
     key = json.loads(C.KEY_NUMBERS.read_text())
 
-    fig, axes = plt.subplots(1, 3, figsize=(C.FIG_W, 2.9))
+    # 2 x 2: top = cross-sectional (A, B), bottom = the same people over time (C, D)
+    fig, axes2d = plt.subplots(2, 2, figsize=(C.FIG_W, 5.2))
+    axes = axes2d.ravel()
 
     # ---- A: PWoH vs PWH
     ax = axes[0]
-    jitter_strip(ax, 0, pwoh["pt"], P["pwoh_2025"])
-    jitter_strip(ax, 1, pwh["pt"], P["pwh_2025"])
+    jitter_strip(ax, 0, pwoh["pt"], P["pwoh_2025"], width=0.10)
+    jitter_strip(ax, 1, pwh["pt"], P["pwh_2025"], width=0.10)
+    box_overlay(ax, 0, pwoh["pt"], P["pwoh_2025"])
+    box_overlay(ax, 1, pwh["pt"], P["pwh_2025"])
     g0, n0 = gmc_marker(ax, 0, pwoh["pt"], P["pwoh_2025"])
     g1, n1 = gmc_marker(ax, 1, pwh["pt"], P["pwh_2025"])
     ax.set_xticks([0, 1]); ax.set_xticklabels([f"PWoH\n(n = {n0})", f"PWH\n(n = {n1})"])
@@ -91,12 +113,13 @@ def main():
 
     # ---- B: PWoH by priming generation
     ax = axes[1]
-    gens = [("wP", "wp", "wP\n(<=1974)"), ("transition", "transition", "Transition\n(1975-81)"),
-            ("aP", "ap", "aP\n(>=1982)")]
+    gens = [("wP", "wp", "wP\n(≤1974)"), ("transition", "transition", "Transition\n(1975–81)"),
+            ("aP", "ap", "aP\n(≥1982)")]
     labs, gen_gmc = [], {}
     for i, (gen, ckey, lab) in enumerate(gens):
         sub = pwoh[pwoh["generation"] == gen]["pt"]
-        jitter_strip(ax, i, sub, P[ckey])
+        jitter_strip(ax, i, sub, P[ckey], width=0.10)
+        box_overlay(ax, i, sub, P[ckey], w=0.42)
         g, n = gmc_marker(ax, i, sub, P[ckey])
         gen_gmc[gen] = g
         labs.append(f"{lab}\nn = {n}")
@@ -105,22 +128,34 @@ def main():
     ax.set_ylabel("Anti-PT IgG (EU/mL)")
     F.panel(ax, "B")
 
-    # ---- C: PWH paired 2021 -> 2025
-    ax = axes[2]
+    # ---- C: PWH paired sera, 2021 / 2025 distributions (the group)
     pr = pwh[pwh["paired"] == 1][["pt_2021", "pt"]].astype(float).dropna()
-    rng = np.random.default_rng(7)
+    n_pair = len(pr)
+    C.check("mcnemar_pairs", n_pair, label="Fig8C/D paired n")
+    ax = axes[2]
+    jitter_strip(ax, 0, pr["pt_2021"], P["pwh_2021"], width=0.10)
+    jitter_strip(ax, 1, pr["pt"], P["pwh_2025"], width=0.10)
+    box_overlay(ax, 0, pr["pt_2021"], P["pwh_2021"])
+    box_overlay(ax, 1, pr["pt"], P["pwh_2025"])
+    g21, _ = gmc_marker(ax, 0, pr["pt_2021"], P["pwh_2021"])
+    g25, _ = gmc_marker(ax, 1, pr["pt"], P["pwh_2025"])
+    ax.set_xticks([0, 1]); ax.set_xticklabels([f"2021\n(n = {n_pair})", f"2025\n(n = {n_pair})"])
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylabel("Anti-PT IgG (EU/mL)")
+    F.panel(ax, "C")
+
+    # ---- D: the same 463 people, individual trajectories
+    ax = axes[3]
     for _, r in pr.iterrows():
         ax.plot([0, 1], [r["pt_2021"], r["pt"]], color="#B9C2CC", lw=0.3, alpha=0.5, zorder=1)
     jitter_strip(ax, 0, pr["pt_2021"], P["pwh_2021"], width=0.10)
     jitter_strip(ax, 1, pr["pt"], P["pwh_2025"], width=0.10)
-    g21, n_pair = gmc_marker(ax, 0, pr["pt_2021"], P["pwh_2021"])
-    g25, _ = gmc_marker(ax, 1, pr["pt"], P["pwh_2025"])
-    C.check("mcnemar_pairs", n_pair, label="Fig8C paired n")
+    gmc_marker(ax, 0, pr["pt_2021"], P["pwh_2021"])
+    gmc_marker(ax, 1, pr["pt"], P["pwh_2025"])
     ax.set_xticks([0, 1]); ax.set_xticklabels([f"2021\n(n = {n_pair})", f"2025\n(n = {n_pair})"])
     ax.set_xlim(-0.5, 1.5)
     ax.set_ylabel("Anti-PT IgG (EU/mL)")
-    ax.set_title("")  # no in-figure title
-    F.panel(ax, "C")
+    F.panel(ax, "D")
 
     for ax in axes:
         ax.set_yscale("log")
@@ -144,6 +179,13 @@ def main():
     sig_bar(axes[0], 0, 1, 230, pfmt(p_ab))
     sig_bar(axes[1], 0, 2, 230, pfmt(p_gen))
     sig_bar(axes[2], 0, 1, 230, pfmt(p_pair))
+    # D: individuals crossing 10 EU/mL, counted from the paired sera
+    up = int(((pr["pt_2021"] < C.CUT_POS) & (pr["pt"] >= C.CUT_POS)).sum())
+    dn = int(((pr["pt_2021"] >= C.CUT_POS) & (pr["pt"] < C.CUT_POS)).sum())
+    sig_bar(axes[3], 0, 1, 230, f"McNemar P = {C.EXPECTED['mcnemar_p']:.2f}")
+    axes[3].text(0.5, 1.75, f"{up} crossed above 10 EU/mL\n{dn} fell below",
+                 ha="center", va="top", fontsize=C.FS["annot"], color=INK, zorder=7,
+                 bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="none", alpha=0.9))  # readable over the lines
     print(f"  titre tests: PWoH vs PWH {p_ab:.2e} / wP vs aP {p_gen:.4f} / 2021 vs 2025 paired {p_pair:.4f}")
 
     fig.tight_layout()
@@ -164,7 +206,9 @@ def main():
     C.check("titre_mwu_p_pwoh_pwh", p_ab, label="Fig8A Mann-Whitney p")
     C.check("titre_mwu_p_wp_ap", p_gen, label="Fig8B Mann-Whitney p")
     C.check("titre_wilcoxon_p_pair", p_pair, label="Fig8C Wilcoxon p")
-    print("  OK: GMCs and P values match config.EXPECTED")
+    C.check("mcnemar_disc_neg_to_pos", up, label="Fig8D crossed above 10")
+    C.check("mcnemar_disc_pos_to_neg", dn, label="Fig8D fell below 10")
+    print("  OK: GMCs, P values and counts match config.EXPECTED")
     return {"titre": {"gmc_pwoh_a": round(g_pwoh, 2), "gmc_pwh": round(g_pwh, 2),
                       "gmc_gen": {k: round(v, 2) for k, v in gen_gmc.items()},
                       "gmc_pair_2021": round(g21, 2), "gmc_pair_2025": round(g25, 2), "n_pair": n_pair,

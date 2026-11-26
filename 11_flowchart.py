@@ -37,14 +37,22 @@ INK = C.PALETTE.get("ink", "#222222")
 _BOXES = []   # (patch, text) pairs, checked for overflow after drawing
 
 
-def box(ax, x, y, w, h, text, fc="white", ec=INK, fs=None, bold=False):
+def box(ax, x, y, w, h, text, fc="white", ec=INK, fs=None, bold=False, double=False):
     fs = fs or C.FS["box"]
     p = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0,rounding_size=0.03",
                        fc=fc, ec=ec, lw=0.8)
     ax.add_patch(p)
+    frame = p
+    if double:
+        # double outline marks the two paired-sera boxes (same 463 people)
+        d = 0.035
+        frame = FancyBboxPatch((x + d, y + d), w - 2 * d, h - 2 * d,
+                               boxstyle="round,pad=0,rounding_size=0.02",
+                               fc="none", ec=ec, lw=0.8)
+        ax.add_patch(frame)
     t = ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs,
                 fontweight="bold" if bold else "normal", linespacing=1.25)
-    _BOXES.append((p, t))
+    _BOXES.append((frame, t))
 
 
 def arrow(ax, x0, y0, x1, y1):
@@ -110,14 +118,14 @@ def main():
         f"PWH, previous study\nstored sera\n3 Jul 2020 – 28 Oct 2021\nn = {RAW_2021}",
         fc=f_2021, ec=c_2021)
     box(ax, cbb - W / 2, Y_SRC, W, H_SRC,
-        f"IMSUT serum bank, 2025\nhealthy volunteers\n17–18 Nov 2025\nn = {BB_DISPENSED}")
+        f"IMSUT serum bank\nhealthy volunteers\n17–18 Nov 2025\nn = {BB_DISPENSED}")
     box(ax, c_hosp - W / 2, Y_SRC, W, H_SRC,
         f"IMSUT Hospital\noutpatients, residual sera\n28 Jul 2025 – 9 Jan 2026\nn = {RAW_2025}")
     box(ax, cref - W_REF / 2, Y_SRC, W_REF, H_SRC,
         f"National serosurvey\n2023 (JIHS), all ages\nn = {JIHS_ALL}", fc=f_ref, ec=c_ref)
 
     # ---- main arrows + exclusions
-    for cx, k, excl in [(c21, "2021", f"No anti-PT IgG result\nn = {RAW_2021 - E['n_pwh_2021']}"),
+    for cx, k, excl in [(c21, "2021", f"Not assayed\nn = {RAW_2021 - E['n_pwh_2021']}"),
                         (cbb, "bb", f"Not assayed\nn = {BB_DISPENSED - BB_ANALYZED}"),
                         (cref, "ref", f"Aged <20 years\nn = {JIHS_ALL - JIHS_ADULT}")]:
         arrow(ax, cx, Y_SRC, cx, Y_GRP + H_GRP)
@@ -155,18 +163,15 @@ def main():
     ax.text(xa + wa / 2 + 0.06, (Y_SUB + Y_SETB + H_SUB) / 2, "outpatients only",
             fontsize=C.FS["box_small"], va="center", ha="left", color="#555555")
 
-    # ---- PWH subsets: one box, one n
-    box(ax, cpwh - W / 2, Y_SUB, W, H_SUB, f"CD4/CD8 ratio, 2025\nn = {E['cd48_2025_n']}",
-        fc=f_pwh, ec=c_pwh)
-    box(ax, cpwh - W / 2, Y_SETB, W, H_SUB, f"HIV disease history\nn = {E['hivhx_linked_n']}",
-        fc=f_pwh, ec=c_pwh)
-    arrow(ax, cpwh, Y_GRP, cpwh, Y_SUB + H_SUB)
-    arrow(ax, cpwh, Y_SUB, cpwh, Y_SETB + H_SUB)
-
-    # ---- paired sera
-    box(ax, c21 - W / 2, Y_SUB, W, H_SUB, f"Paired sera 2021\nand 2025, n = {E['mcnemar_pairs']}",
-        fc=f_2021, ec=c_2021)
+    # ---- paired sera: the same 463 people appear under both PWH columns (2021 purple,
+    # 2025 orange), at the same height. CD4/CD8 and HIV-history subsets are in Table 3.
+    npair = E["mcnemar_pairs"]
+    box(ax, c21 - W / 2, Y_SUB, W, H_SUB, f"Paired 2021\nn = {npair}",
+        fc=f_2021, ec=c_2021, double=True)
     arrow(ax, c21, Y_GRP, c21, Y_SUB + H_SUB)
+    box(ax, cpwh - W / 2, Y_SUB, W, H_SUB, f"Paired 2025\nn = {npair}",
+        fc=f_pwh, ec=c_pwh, double=True)
+    arrow(ax, cpwh, Y_GRP, cpwh, Y_SUB + H_SUB)
 
     check_fit(fig)
     stem = C.save_fig(fig, "flow")
