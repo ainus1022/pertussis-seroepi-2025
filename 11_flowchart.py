@@ -125,8 +125,10 @@ def main():
         f"National serosurvey\n2023 (JIHS), all ages\nn = {JIHS_ALL}", fc=f_ref, ec=c_ref)
 
     # ---- main arrows + exclusions
-    for cx, k, excl in [(c21, "2021", f"Not assayed\nn = {RAW_2021 - E['n_pwh_2021']}"),
-                        (cbb, "bb", f"Not assayed\nn = {BB_DISPENSED - BB_ANALYZED}"),
+    # Neutral wording for both exclusions: the 2021 sera have no PT (or FHA) result recorded,
+    # and the serum-bank sample is a laboratory assay error (Methods); the reasons differ.
+    for cx, k, excl in [(c21, "2021", f"No anti-PT IgG result\nn = {RAW_2021 - E['n_pwh_2021']}"),
+                        (cbb, "bb", f"No anti-PT IgG result\nn = {BB_DISPENSED - BB_ANALYZED}"),
                         (cref, "ref", f"Aged <20 years\nn = {JIHS_ALL - JIHS_ADULT}")]:
         arrow(ax, cx, Y_SRC, cx, Y_GRP + H_GRP)
         exclusion(ax, cx, Y_EXC, WE[k], H_EXC, excl)
